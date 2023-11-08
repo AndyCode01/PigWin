@@ -1,0 +1,126 @@
+<body>
+
+    <div style="text-align:center">
+        <h1>{{ title }}</h1>
+        <img width="300" alt="Logo Proyecto" src="/assets/punto-venta.png">
+    </div>
+
+    <br><br>
+
+    <div class="dir">
+
+    </div>
+    <br><br>
+
+    <!--------------------------------------------------------------------------------------------->
+    <!-- para mostrar los Catalogos Totales -->
+
+    <div class="listaPuntosVenta">
+
+        <h2>Todos los Puntos de Venta</h2>
+
+        <form (ngSubmit)="consultaPuntosVentaTotales(true)" [formGroup]="listarPuntosVentaTotales">
+
+            <button type="submit" style="margin-right: 30px">Listar todos</button>
+            <button (click)="LimpiarLista(false)" style="scroll-margin-left: 30px">Limpiar todos</button>
+
+            <br><br>
+            <div *ngIf="flag">
+                <h2>{{tituloPuntoVentaLista}}</h2>
+                <table>
+                    <thead>
+                        <th>{{tablapuntosventatotales[0]}}</th>
+                        <th>{{tablapuntosventatotales[1]}}</th>
+                        <th>{{tablapuntosventatotales[2]}}</th>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor='let punto of PuntoVentaUniT'>
+
+                            <th>{{punto.id_punto_venta}} </th>
+                            <th>{{punto.NombrePuntoVenta}} </th>
+                            <th>{{punto.AdministradorPuntoVenta}} </th>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </form>
+    </div>
+    <br><br>
+
+    <div class="creaPunto">
+
+        <h2>Registrar Punto Venta</h2>
+
+        <form (ngSubmit)="insertarNuevoPuntoVenta()" [formGroup]="CrearPuntoVentaU">
+
+            <span class="spn_lbl">Nombre: </span>
+
+            <label for="textNueNombrePuntoVenta">
+
+                <input type="text" name="TtextNueNombrePuntoVenta" id="TtextNueNombrePuntoVenta"
+                    formControlName="textNueNombrePuntoVenta">
+
+            </label>
+
+            <br><br>
+
+            <span class="spn_lbl">Administrador: </span>
+            <label for="textNueAdminPuntoVenta">
+                 <input type="text" name="TtextNueAdminPuntoVenta" id="TtextNueAdminPuntoVenta"
+                    formControlName="textNueAdminPuntoVenta">
+            </label>
+            <br> <br>
+
+            <button type="submit">Registrar Punto Venta</button>
+
+            <br><br>
+        </form>
+    </div>
+    <br><br>
+
+    <div class="editPunto">
+        <h2>Modificar Punto </h2>
+        <form (ngSubmit)="SelPuntoVentaEditar()" [formGroup]="ActPuntoVentaU">
+
+            <span class="spn_lbl">Punto a Editar</span>
+            <label>
+                <select class="dropdown2" formControlName="CBPuntoVentaEdi" (click)="consultaPuntosVentaTotales(false)">
+                    
+                    <option *ngFor="let caese of PuntoVentaUniT" [value]="caese.id_punto_venta">
+                        {{caese.id_punto_venta}}
+                    </option>
+                </select>
+            </label>
+            <br> <br>
+            <button type="submit">Buscar Ticket a Editar</button>
+
+            <h2>{{titloPuntoVentaEditar}}</h2>
+            <li *ngFor="let cae of PuntoVentaCataEdi">
+
+                <!-- Los otros controles para la captura de los datos deL cATALOGO -->
+                <span class="spn_lbl">Nombre: </span>
+                <label for="CtextNueNombrePuntoVentaEdi"><input type="text" name="CtextNueNombrePuntoVentaEdi"
+                        id="CtextNueNombrePuntoVentaEdi" value={{cae.FechaTicket}} [(ngModel)]="cae.NombrePuntoVenta"
+                        [value]="cae.NombrePuntoVenta" formControlName="textNueNombrePuntoVentaEdi">
+                </label>
+                <br><br>
+
+                <span class="spn_lbl">Administrador: </span>
+                <label for="CtextNueAdminPuntoVentaEdi"><input type="text" name="CtextNueAdminPuntoVentaEdi" id="CtextNueAdminPuntoVentaEdi"
+                        value={{cae.AdministradorPuntoVenta}} [(ngModel)]="cae.AdministradorPuntoVenta" [value]="cae.AdministradorPuntoVenta"
+                        formControlName="textNueAdminPuntoVentaEdi">
+                </label>
+                <br><br>
+            </li>
+            <br><br>
+
+            <button (click)="ActualizarPuntoVenta()">Actualizar Registro</button>
+
+            <br><br>
+        </form>
+    </div>
+
+</body>

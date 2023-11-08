@@ -1,0 +1,73 @@
+div.listaPuntosVenta,
+div.creaPunto,
+div.editPunto{
+  position: relative;
+  left: 0; /* Reiniciamos la posición a la izquierda */
+  border: 3px solid rgb(59, 61, 134); /* Cambiar el color de borde según la categoría */
+  width: 600px; /* Establecemos el mismo ancho para todos los contenedores */
+  background-color: rgb(238, 243, 191); /* Cambiar el color de fondo según la categoría */
+  text-align: center;
+  margin: 20px auto; /* Centramos horizontalmente y agregamos un espacio superior */
+}
+
+
+/* Repite para las demás categorías */
+
+/* Estilo para los enlaces */
+a {
+  color: rgb(59, 61, 134); /* Color de enlace relacionado a las apuestas */
+}
+
+/* Estilos para listas y tablas */
+li, ul, th, td, table {
+  list-style: none;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Estilo para las tablas */
+table {
+  background-color: rgb(255, 237, 180);
+  width: 100%;
+  font-family: "calibri", Garamond, 'Comic Sans';
+  font-weight: lighter;
+  font-size: 15px;
+  text-align: center;
+  border-collapse: collapse;
+}
+
+/* Estilos para las filas pares de las tablas */
+tr:nth-child(even) {
+  background-color: rgb(250, 222, 128);
+}
+
+/* Estilos para las tablas específicas */
+table.tabBuscar {
+  width: 100%;
+  border: none;
+  border-collapse: collapse;
+  background-color: rgb(255, 237, 180);
+  text-align: center;
+}
+
+thead.Colb {
+  background-color: rgb(240, 202, 98);
+  border: solid 1px black;
+  font-family: "calibri", Garamond, 'Comic Sans';
+  font-weight: bold;
+  font-size: 18px;
+}
+
+tbody.Filb {
+  background-color: rgb(224, 218, 121);
+  border: solid 1px black;
+  font-family: "calibri", Garamond, 'Comic Sans';
+  font-weight: lighter;
+  font-size: 14px;
+}
+
+/* Estilos para las celdas de borde en las tablas */
+th.b, tr.b {
+  border: solid 1px black;
+}
