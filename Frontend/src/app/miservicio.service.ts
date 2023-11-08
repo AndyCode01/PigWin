@@ -136,6 +136,16 @@ export class MiservicioService {
   getEquiposTotales(): Observable<any> {
     return this.http.get(this.Url + '/Equipo', httpOptions);
   }
+
+  async crearPartidoU(Dato: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.http.post(this.Url + '/Partido', Dato, httpOptions).toPromise();
+    });
+  }
+
+  getPartidoTipEquipo(id: any): Observable<any> {
+    return this.http.get(this.Url + '/Ticket/' + id, httpOptions);
+  }
   
 
 }

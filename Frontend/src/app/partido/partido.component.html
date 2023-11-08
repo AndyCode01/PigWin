@@ -52,5 +52,53 @@
     </div>
     <br><br>
 
+    <div class="creaTicket">
+
+        <h2>Registrar Partido</h2>
+
+        <form (ngSubmit)="insertarNuevoPartido()" [formGroup]="crearPartidoU">
+
+            <!-- Los otros controles para la captura de los datos del Catalogo -->
+
+            <span class="spn_lbl">Equipo Local</span>
+            <label>
+                <select class="dropdown2" formControlName="CBPartidoEquipo" (click)="consultaEquiposTotales()">
+                    <option value="value1">Ticket</option>
+                    <option *ngFor="let caese of equiposTotales" [value]="caese.id_equipos">
+                        {{caese.NombreEquipo}}
+                    </option>
+                </select>
+            </label>
+            <br> <br>
+            <button type="submit">Buscar Ticket a Editar</button>
+
+
+
+
+
+            <span class="spn_lbl">Punto Venta: </span>
+            <label for="textNuePuntoVentaTicket">
+                 <input type="text" name="TtextNuePuntoVentaTicket" id="TtextNuePuntoVentaTicket"
+                    formControlName="textNuePuntoVentaTicket">
+            </label>
+            <br> <br>
+
+            <span class="spn_lbl">Cliente: </span>
+
+            <label for="textNueCliente">
+
+                <input type="text" name="TtextNueCliente" id="TtextNueCliente" formControlName="textNueCliente">
+
+            </label>
+
+            <br><br>
+
+            <button type="submit">Registrar Ticket</button>
+
+            <br><br>
+        </form>
+    </div>
+    <br><br>
+</body>
     
        

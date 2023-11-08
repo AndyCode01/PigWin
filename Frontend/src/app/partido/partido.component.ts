@@ -25,7 +25,7 @@ export class PartidoComponent implements OnInit {
 
   title = 'Manejo de Partidos';
   tituloPartidoLista = '';
-  tituloPartidoUniListaDeporte = '';
+  tituloPartidoUniListaEquipo = '';
   titloPartidoBuscado = '';
   titloPartidoEditar = '';
 
@@ -38,7 +38,7 @@ export class PartidoComponent implements OnInit {
   equiposTotales: any=[];
 
   //Por tipo
-  PartidoUniTDeporte: any = [];
+  PartidoUniTEquipo: any = [];
 
   //Listar
   tablapartidostotales: any = [];
@@ -55,10 +55,16 @@ export class PartidoComponent implements OnInit {
   listarPartidosTotales = new FormGroup({});
 
   crearPartidoU = new FormGroup({
-
+    textNueEquipoLocal: new FormControl(),
+    textNueEquipoVisitante: new FormControl(),
+    textNueFechaPartido: new FormControl(),
+    textNueDeporte: new FormControl(),
+    textNueGanadorPartido: new FormControl(),
   })
 
-  ConsultarPartidoyEquipo = new FormGroup({
+
+
+  ConsultarPartidoByEquipo = new FormGroup({
     CBPartidoEquipo: new FormControl(),
   })
 
@@ -106,8 +112,46 @@ export class PartidoComponent implements OnInit {
         console.error(error + ' ');
       }
     )
-    
   }
+
+  
+  public SelTipEquipo() {
+    this.BuscarEvalor = this.ConsultarPartidoByEquipo.getRawValue()['CBPartidoEquipo'];
+    this.servi.getTicketTipPuntoVenta(this.BuscarEvalor).subscribe(
+      (data: any) => {
+        this.PartidoUniTEquipo = data;
+        console.log(this.PartidoUniTEquipo);
+
+        this.tituloPartidoUniListaEquipo = 'Equipo Local';
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
+
+  insertarNuevoPartido() {
+    var datosvalo1 = this.crearPartidoU.getRawValue()['textNueFechaTicket'];
+    var datosvalo2 = this.crearPartidoU.getRawValue()['textNuePuntoVentaTicket']; //JSON armado
+    var datosvalo3 = this.crearPartidoU.getRawValue()['textNueCliente']; //JSON armado
+
+    var cadena = {
+      FechaTicket: datosvalo1,
+      PuntoVentaTicket: datosvalo2,
+      ClienteTicket: datosvalo3,
+    };
+
+    this.servi.crearPartidoU(cadena).then((res) => {
+        
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    this.crearPartidoU.reset();
+  }
+
+
 
 
 
