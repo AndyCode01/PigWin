@@ -119,16 +119,16 @@ export class PartidoComponent implements OnInit {
     this.controlLista = 0;
   }
 
-  public consultaEquiposTotales() {
-    this.servi.getEquiposTotales().subscribe(
-      (data: { equipos: [] }) => {
-        this.equiposTotales = data;
-      },
-      (error) => {
-        console.error(error + ' ');
-      }
-    );
-  }
+  // public consultaEquiposTotales() {
+  //   this.servi.getEquiposTotales().subscribe(
+  //     (data: { equipos: [] }) => {
+  //       this.equiposTotales = data;
+  //     },
+  //     (error) => {
+  //       console.error(error + ' ');
+  //     }
+  //   );
+  // }
 
 
   // public consultaDeportesTotales() {
