@@ -6,8 +6,8 @@ PartidoModelo.getPartidos = function (callback){
     if(connection){
         var sql = "SELECT p.id_partidos, " +
         "e1.NombreEquipo AS 'Equipo_Local', " +
-        "e2.NombreEquipo AS 'Equipo_Visitante', "+
-        "p.FechaPartido, " +
+        "e2.NombreEquipo AS 'Equipo_Visitante', " +
+        "DATE_FORMAT(p.FechaPartido, ' %d/%m/%Y %H:%i ') AS 'FechaPartido', " +
         "cu.NombreCatalogo, "+
         "p.GanadorPartido " +
         "FROM partidos AS p " +
@@ -30,7 +30,7 @@ PartidoModelo.getPartidoByTip = function (tip, callback){
         var sql = "SELECT p.id_partidos, " +
         "e1.NombreEquipo AS 'Equipo Local', " +
         "e2.NombreEquipo AS 'Equipo Visitante', " +
-        "p.FechaPartido  AS 'Fecha Partido', " +
+        "DATE_FORMAT(p.FechaPartido, ' %d/%m/%Y %H:%i ') AS 'FechaPartido', " +
         "cu.NombreCatalogo AS Deporte, " +
         "p.GanadorPartido  AS 'Ganador Partido' " +
         "FROM partidos AS p " +
@@ -51,11 +51,14 @@ PartidoModelo.getPartidoByTip = function (tip, callback){
 PartidoModelo.getPartidoById = function (id, callback){
     if(connection){
         var sql = "SELECT p.id_partidos, " +
-        "e1.NombreEquipo AS 'Equipo Local', " +
-        "e2.NombreEquipo AS 'Equipo Visitante', " +
-        "p.FechaPartido AS 'Fecha partido', " +
-        "cu.NombreCatalogo AS 'Deporte', " +
-        "p.GanadorPartido AS 'Ganador Partido'" +
+        "e1.NombreEquipo AS 'Equipo_Local', " +
+        "e2.NombreEquipo AS 'Equipo_Visitante', " +
+        "p.EquipoLocal, " +
+        "p.EquipoVisitante, " +
+        "DATE_FORMAT(p.FechaPartido, ' %d/%m/%Y %H:%i ') AS 'FechaPartido', " +
+        "p.Deporte, " +
+        "cu.NombreCatalogo AS 'DeporteNombre', " +
+        "p.GanadorPartido AS 'GanadorPartido' " +
         "FROM partidos AS p "+
         "LEFT JOIN Equipos AS e1 ON p.EquipoLocal = e1.id_equipos " +
         "LEFT JOIN Equipos AS e2 ON p.EquipoVisitante = e2.id_equipos " +

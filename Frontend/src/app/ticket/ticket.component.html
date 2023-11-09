@@ -109,7 +109,7 @@
 
             <label for="textNueFechaTicket">
 
-                <input type="text" name="TtextNueFechaTicket" id="TtextNueFechaTicket"
+                <input type="datetime-local" name="TtextNueFechaTicket" id="TtextNueFechaTicket"
                     formControlName="textNueFechaTicket">
 
             </label>
@@ -162,7 +162,7 @@
 
                 <!-- Los otros controles para la captura de los datos deL cATALOGO -->
                 <span class="spn_lbl">Fecha ticket: </span>
-                <label for="CtextNueFechaTicketEdi"><input type="text" name="CtextNueFechaTicketEdi"
+                <label for="CtextNueFechaTicketEdi"><input type="datetime-local" name="CtextNueFechaTicketEdi"
                         id="CtextNueFechaTicketEdi" value={{cae.FechaTicket}} [(ngModel)]="cae.FechaTicket"
                         [value]="cae.FechaTicket" formControlName="textNueFechaTicketEdi">
                 </label>
