@@ -92,9 +92,7 @@ export class ClienteComponent implements OnInit {
   }
 
   public valoresByTipoCatalogo(id_tipo_catalogo: number) {
-    return this.servi
-      .getTipoCatalogo(id_tipo_catalogo)
-      .pipe(map((data) => data));
+    return this.servi.getTipoCatalogo(id_tipo_catalogo).pipe(map((data) => data));
   }
 
   public async buscarValorCatalogo(atributo: string, valor: string) {

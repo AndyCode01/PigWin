@@ -1,7 +1,7 @@
 node_modules
 config.json
 
-Frontend/pnpm-lock.yaml
+
 Backend/pnpm-lock.yaml
 Frontend/.angular/
 

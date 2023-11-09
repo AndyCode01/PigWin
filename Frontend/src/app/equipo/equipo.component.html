@@ -1,0 +1,63 @@
+<body>
+    <div class="listaEquipo">
+        <h1>Todos los Equipos</h1>
+        <button (click)="mostrarTabla()" style="margin-right: 30px">Mostrar Equipos</button>
+        <button (click)="limpiarLista()">Limpiar</button>
+        <br><br>
+
+        <table *ngIf="showTable">
+            <thead>
+                <th *ngFor="let key of KeysEquipo">{{key}}</th>
+            </thead>
+            <tbody>
+                <tr *ngFor="let equipo of Equipos ">
+                    <th *ngFor="let key of KeysEquipo">{{equipo[key]}}</th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="listaU">
+        <h1>Busqueda Equipo</h1>
+        <form action="" [formGroup]="FormBusquedaEquipo">
+        
+            <select formControlName="TipoBusquedaEquipo" (change)="filtros(FormBusquedaEquipo)">
+                <option value="id_equipos">id</option>
+               
+            </select> 
+            <select formControlName="ValorBusquedaEquipo">
+                <option *ngFor="let opcion of valuefilters" value="{{opcion}}">{{opcion}}</option>
+            </select>
+        </form>
+        <button (click)="BuscarEquipo(FormBusquedaEquipo)">Busqueda Equipo</button>
+        <table *ngIf="EquiposFiltrados.length >=1">
+            <thead>
+                <th *ngFor="let key of KeysEquipo">{{key}}</th>
+            </thead>
+            <tbody>
+                <tr *ngFor="let cliente of EquiposFiltrados ">
+                    <th *ngFor="let key of KeysEquipo">{{cliente[key]}}</th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="listaU">
+        <h1>Registro Equipo</h1>
+        <form action="" [formGroup]="FormCrearEquipo">
+          <div style="display: flex; flex-wrap: wrap;">
+            <div style="margin: 10px;" *ngFor="let atributo of ['Nombre Equipo']">
+            <label for="{{atributo}}">{{atributo}}</label>
+            <input type="text" formControlName="{{atributo}}">
+            </div>
+
+            <div style="margin: 10px;" *ngFor="let atributo of ['Deporte']">
+              <label for="{{atributo}}">{{atributo}}</label>
+              <select formControlName="{{atributo}}">
+                <option *ngFor="let valor of listaValoresAtributo(atributo)" value="{{valor}}">{{valor}}</option>
+              </select>
+            </div>
+          </div>
+        </form>
+        <button (click)="registrarEquipo()">Crear Equipo</button>
+      </div>

@@ -6,7 +6,7 @@ EquipoModelo.getEquipos = function (callback) {
     var sql =
       "SELECT e.id_equipos, " +
       "e.NombreEquipo, " +
-      "cu.NombreCatalogo FROM equipos AS e " +
+      "cu.NombreCatalogo AS 'Deporte' FROM equipos AS e " +
       "INNER JOIN catalogo_universal AS cu ON e.Deporte = cu.id_catalogo_universal;";
     connection.query(sql, function (error, rows) {
       if (error) {

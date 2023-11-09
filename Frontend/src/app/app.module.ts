@@ -16,7 +16,9 @@ import { PuntoventaComponent } from './puntoventa/puntoventa.component';
 import { PartidoComponent } from './partido/partido.component';
 import { ClienteComponent } from './cliente/cliente.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { EquipoComponent } from './equipo/equipo.component';
 import { ApuestaComponent } from './apuesta/apuesta.component';
+
 
 
 
@@ -47,9 +49,13 @@ const appRoutes: Routes = [
     component: ClienteComponent,
   },
   {
+    path: 'Equipo',
+    component: EquipoComponent,
+  },
+  {
     path: 'Apuesta',
     component: ApuestaComponent,
-  },
+  }
 ];
 
 @NgModule({
@@ -60,6 +66,7 @@ const appRoutes: Routes = [
     PuntoventaComponent,
     PartidoComponent,
     ClienteComponent,
+    EquipoComponent,
     ApuestaComponent,
   ],
   imports: [
