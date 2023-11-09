@@ -134,6 +134,11 @@ export class MiservicioService {
     return this.http.get(this.Url + '/Partido', httpOptions);
   }
 
+  getPartidoByID(id_partidos: number): Observable<any> {
+    return this.http.get(this.Url + `/Partido/id/${id_partidos}`, httpOptions);
+  }
+
+
   getEquiposTotales(): Observable<any> {
     return this.http.get(this.Url + '/Equipo', httpOptions);
   }

@@ -51,93 +51,34 @@
         </form>
     </div>
     <br><br>
-<!-- Intento de traer por Id el partido, supuestamente el cucho esta pidiendolo eso le dijeron a rafael-->
-    <div class="ConsultarPartido">
-        <h2>Consultar un Partido por Id</h2>
-        <form (ngSubmit)="SelPartidoConsultar()" [formGroup]="ConsultarPartidoBYIdU">
 
-            <span class="spn_lbl">Partido a Consultar</span>
-            <label>
-                <select class="dropdown2" formControlName="DeporteCataRead" (click)="consultaPartidosTotales(false)">
-                    <option *ngFor="let caese of PartidoUniT" [value]="caese.id_partidos">
-                        {{caese.id_partidos}}
-                    </option>
-                </select>
-            </label>
-
-            <div *ngIf="flag">
-                <h2>{{tituloPartidoLista}}</h2>
-                <table>
-                    <thead>
-                        <th>{{tablapartidostotales[0]}}</th>
-                        <th>{{tablapartidostotales[1]}}</th>
-                        <th>{{tablapartidostotales[2]}}</th>
-                        <th>{{tablapartidostotales[3]}}</th>
-                        <th>{{tablapartidostotales[4]}}</th>
-                    </thead>
-
-                    <tbody>
-                        <tr *ngFor='let tick of PartidoUniT'>
-
-                            <th>{{tick.id_partidos}} </th>
-                            <th>{{tick.Equipo_Local}} VS {{tick.Equipo_Visitante}} </th>
-                            <th>{{tick.FechaPartido}} </th>
-                            <th>{{tick.NombreCatalogo}} </th>
-                            <th>{{tick.GanadorPartido}} </th>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <br><br>
+    <div class="listaU">
+        <h1>Busqueda Partido</h1>
+        <form action="" [formGroup]="FormBusquedaPartido">
+        
+            <select formControlName="TipoBusquedaPartido" (change)="filtros(FormBusquedaPartido)">
+                <option value="id_partidos">id</option>
+               
+            </select> 
+            <select formControlName="ValorBusquedaPartido">
+                <option *ngFor="let opcion of valuefilters" value="{{opcion}}">{{opcion}}</option>
+            </select>
         </form>
+        <button (click)="BuscarPartido(FormBusquedaPartido)">Busqueda Equipo</button>
+        <table *ngIf="PartidosFiltrados.length >=1">
+            <thead>
+                <th *ngFor="let key of KeysPartido">{{key}}</th>
+            </thead>
+            <tbody>
+                <tr *ngFor="let cliente of PartidosFiltrados ">
+                    <th *ngFor="let key of KeysPartido">{{cliente[key]}}</th>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
 
-<!-- Intento de traer por deporte-->
-    <div class="listaPartidoByDeporte">
     
-        <h2>Buscar por Deporte</h2>
-        <form (ngSubmit)="SelTipDeporte()" [formGroup]="ConsultarPartidoByDeporteU">
-
-            <span class="spn_lbl">Ticket a Editar</span>
-            <label>
-                <select class="dropdown2" formControlName="CBPartidoDeporte" (click)="consultaDeportesTotales()">
-                
-                    <option *ngFor="let caese of deportesTotales" [value]="caese.id_equipos">
-                        {{caese.NombreEquipo}}
-                    </option>
-                </select>
-            </label>
-            <br> <br>
-            <button type="submit">Buscar Deporte</button>
-          
-
-
-            <br /><br />
-
-            <h2>{{tituloPartidoUniListaDeporte}}</h2>
-
-            <table>
-                <thead>
-                    <th>{{tablapartidosDeporte[0]}}</th>
-                    <th>{{tablapartidosDeporte[1]}}</th>
-                    <th>{{tablapartidosDeporte[2]}}</th>
-                    <th>{{tablapartidosDeporte[3]}}</th>
-                </thead>
-
-                <tbody>
-                    <tr *ngFor="let pacudoc of PartidoUniTDeporte">
-                        <th>{{pacudoc.id_tickets}}</th>
-                        <th>{{pacudoc.FechaTicket}}</th>
-                        <th>{{pacudoc.PuntoVentaTicket}}</th>
-                        <th>{{pacudoc.PrimerNombre}} {{pacudoc.PrimerApellido}}</th>
-                    </tr>
-                </tbody>
-            </table>
-        </form>
-    </div>
-
-    <br /><br />
     
 
 

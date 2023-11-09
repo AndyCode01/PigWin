@@ -52,6 +52,17 @@ export class PartidoComponent implements OnInit {
 
   BuscarEvalor = 1;
   controlLista = 1;
+  
+
+  Partidos: Array<any> = [];
+  PartidosFiltrados : Array<any> = [];
+  KeysPartido: Array<any> = [];
+  
+  showTable: boolean = false;
+  filters: Array<string> = [];
+  valuefilters: Array<string> = [];
+
+  showInputModificar: boolean = false;
 
   flag: boolean = false;
 
@@ -76,23 +87,54 @@ export class PartidoComponent implements OnInit {
 
   })
 
-  ConsultarPartidoBYIdU = new FormGroup({
-    CBPartidoRead: new FormControl(),
-    textEquipoLocalRead: new FormControl(),
-    textEquipoVisitanteRead: new FormControl(),
-    textFechaPartidoRead: new FormControl(),
-    textDeporteRead: new FormControl(),
-  })
+  FormBusquedaPartido = new FormGroup({
+    TipoBusquedaPartido: new FormControl(),
+    ValorBusquedaPartido: new FormControl(),
+  });
 
 
-  // ConsultarPartidoByEquipoU = new FormGroup({
-  //   CBPartidoEquipo: new FormControl(),
-  // });
+  public mostrarTabla(){
+    this.showTable = true;
+  }
 
+  public limpiarLista(){
+    if (this.Partidos.length > 1 && this.showTable == true)
+      this.showTable = false;
+  }
 
-  ConsultarPartidoByDeporteU = new FormGroup({
-    CBPartidoDeporte: new FormControl(),
-  })
+  public filtros(Form: FormGroup) {
+    
+    const tipoBusqueda = Form.getRawValue()['TipoBusquedaPartido'];
+    this.valuefilters = this.listaValoresAtributo(tipoBusqueda);
+    console.log(tipoBusqueda, this.Partidos, this.valuefilters);
+  }
+
+  public listaValoresAtributo(tipoBusqueda: string) {
+    
+    let valores: Array<string> = [];
+    let flag: boolean = true;
+    for (let index = 0; index < this.Partidos.length; index++) {
+      valores.filter((valor) => {
+        if (valor == this.Partidos[index][tipoBusqueda]) flag = false;
+      });
+      if (flag == true) valores.push(this.Partidos[index][tipoBusqueda]);
+      flag = true;
+    }
+    return valores;
+  }
+
+  public async BuscarPartido(Form: FormGroup) {
+    const valores = {
+      tipoBusqueda: Form.getRawValue()['TipoBusquedaPartido'],
+      valorFiltro: Form.getRawValue()['ValorBusquedaPartido'],
+
+    };
+   
+    this.servi.getPartidoByID(valores?.valorFiltro).subscribe((data) => {
+      this.PartidosFiltrados = data;
+    });
+  }
+
 
   public consultaPartidosTotales(list: boolean) {
     if (this.controlLista == 1) {
@@ -129,58 +171,7 @@ export class PartidoComponent implements OnInit {
     this.controlLista = 0;
   }
 
-  // public consultaEquiposTotales() {
-  //   this.servi.getEquiposTotales().subscribe(
-  //     (data: { equipos: [] }) => {
-  //       this.equiposTotales = data;
-  //     },
-  //     (error) => {
-  //       console.error(error + ' ');
-  //     }
-  //   );
-  // }
 
-
-  // public consultaDeportesTotales() {
-  //   this.servi.getlListCatologoDeporte('/' + 3).subscribe(
-  //     (data: { equipos: [] }) => {
-  //       this.deportesTotales = data;
-  //     },
-  //     (error) => {
-  //       console.error(error + ' ');
-  //     }
-  //   );
-  // }
-
-  // public SelTipEquipo() {
-  //   this.BuscarEvalor = this.ConsultarPartidoByEquipoU.getRawValue()['CBPartidoEquipo'];
-  //   this.servi.getPartidoTipEquipo(this.BuscarEvalor).subscribe(
-  //     (data: any) => {
-  //       this.PartidoUniTEquipo = data;
-  //       console.log(this.PartidoUniTEquipo);
-
-  //       this.tituloPartidoUniListaEquipo = 'Equipo Local';
-  //     },
-  //     (error) => {
-  //       console.log(error);
-  //     }
-  //   );
-  // }
-
-  // public SelTipDeporte() {
-  //   this.BuscarEvalor = this.ConsultarPartidoByDeporte.getRawValue()['CBPartidoDeporte'];
-  //   this.servi.getPartidoTipEquipo(this.BuscarEvalor).subscribe(
-  //     (data: any) => {
-  //       this.PartidoUniTDeporte = data;
-  //       console.log(this.PartidoUniTDeporte);
-
-  //       this.tituloPartidoUniListaDeporte = 'Deporte';
-  //     },
-  //     (error) => {
-  //       console.log(error);
-  //     }
-  //   );
-  // }
 
   //El metodo de la consulta que pues en este caso no sirve de mucho
   public consultaDeportesTotales(){
@@ -193,22 +184,7 @@ export class PartidoComponent implements OnInit {
     )
   }
 
-  //Intento de metodo para traerlo por deporte hice una consulta a equipos pero no
-  // pero la cague porque era a catalogo univrsal para obtener los deportes
-  public SelTipDeporte() {
-    this.BuscarEvalor = this.ConsultarPartidoByDeporteU.getRawValue()['CBPartidoDeporte'];
-    this.servi.getPartidoTipDeporte(this.BuscarEvalor).subscribe(
-      (data: any) => {
-        this.PartidoUniTDeporte = data;
-        console.log(this.PartidoUniTDeporte);
 
-        this.tituloPartidoUniListaDeporte = 'Deporte a Consultar';
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-  }
 
 
 
@@ -256,23 +232,7 @@ export class PartidoComponent implements OnInit {
     );
   }
 
-  //Intento de metodo para consultar el partido por id
-  public SelPartidoConsultar() {
-    this.BuscarEvalor = this.ConsultarPartidoBYIdU.getRawValue()['CBPartidoRead'];
-
-    this.servi.getPartidoSeleccionado(this.BuscarEvalor).subscribe(
-      (data: any) => {
-        this.PartidoCataEdi = data;
-        console.log(this.PartidoCataEdi);
-
-        this.titloPartidoBuscado = 'Partido a Consultar';
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-  }
-
+  
 
 
   
@@ -311,7 +271,8 @@ export class PartidoComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.listarPartidosTotales = this.formBuilder.group({});
+    //this.listarPartidosTotales = this.formBuilder.group({});
+    this.consultaPartidosTotales(true);
 
     this.ActPartidoU = this.formBuilder.group({
       CBPartidoEdi: [],
