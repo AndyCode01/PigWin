@@ -206,6 +206,18 @@ export class MiservicioService {
     });
   }
 
+
+  // Equipos
+  getEquipoByID(id_equipo: number): Observable<any> {
+    return this.http.get(this.Url + `/Equipo/id/${id_equipo}`, httpOptions);
+  }
+
+  async CrearEquipo(Dato: any): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.http
+          .post(this.Url + '/Equipo', Dato, httpOptions)
+
   getApuestasTotales(): Observable<any> {
     return this.http.get(this.Url + '/Apuesta', httpOptions);
   }
@@ -217,6 +229,9 @@ export class MiservicioService {
   getApuestaByCliente(id_cliente: number): Observable<any> {
     return this.http.get(this.Url + `/Apuesta/${id_cliente}`, httpOptions);
   }
+  
+  
+  //Apuesta
 
   async CrearApuesta(Dato: any): Promise<any> {
     return new Promise(async (resolve, reject) => {
@@ -244,3 +259,4 @@ export class MiservicioService {
     });
   }
 }
+
