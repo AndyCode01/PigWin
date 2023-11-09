@@ -217,6 +217,15 @@ export class MiservicioService {
       try {
         const res = await this.http
           .post(this.Url + '/Equipo', Dato, httpOptions)
+          .toPromise();
+        resolve(res);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+
 
   getApuestasTotales(): Observable<any> {
     return this.http.get(this.Url + '/Apuesta', httpOptions);
@@ -229,8 +238,8 @@ export class MiservicioService {
   getApuestaByCliente(id_cliente: number): Observable<any> {
     return this.http.get(this.Url + `/Apuesta/${id_cliente}`, httpOptions);
   }
-  
-  
+
+
   //Apuesta
 
   async CrearApuesta(Dato: any): Promise<any> {
