@@ -19,6 +19,7 @@ export class ApuestaComponent implements OnInit {
   //Objeto donde se guarda la info del cliente
   Apuestas: Array<any> = [];
   apuestasFiltradas: Array<any> = [];
+  apuestaModificable: Array<any>=[];
   keysApuesta: Array<any> = [];
   newApuesta: any = [];
 
@@ -38,7 +39,7 @@ export class ApuestaComponent implements OnInit {
 
   showInputModificar: boolean = false;
 
-  FormBusquedaCliente = new FormGroup({
+  FormBusquedaApuesta = new FormGroup({
     TipoBusquedaCliente: new FormControl(),
     ValorBusquedaCliente: new FormControl(),
   });
@@ -50,24 +51,18 @@ export class ApuestaComponent implements OnInit {
     EquipoApuesta: new FormControl(),
   });
 
-  FormModificarCliente = new FormGroup({
-    TipoBusquedaCliente: new FormControl(),
-    ValorBusquedaCliente: new FormControl(),
-    'Primer Nombre': new FormControl(),
-    'Segundo Nombre': new FormControl(),
-    'Primer Apellido': new FormControl(),
-    'Segundo Apellido': new FormControl(),
-    'Tipo Documento': new FormControl(),
-    Sexo: new FormControl(),
-    'Metodo De Pago': new FormControl(),
-    'Numero Documento': new FormControl(),
+  FormModificarApuesta = new FormGroup({
+    PartidoApuesta: new FormControl(),
+    TicketApuesta: new FormControl(),
+    'Monto Apuesta': new FormControl(),
+    EquipoApuesta: new FormControl(),
   });
 
   public consultaApuestasTotales() {
     this.servi.getApuestasTotales().subscribe((data) => {
       this.Apuestas = data;
       this.keysApuesta = Object.keys(this.Apuestas[0]);
-      this.filtros(this.FormBusquedaCliente);
+      this.filtros(this.FormBusquedaApuesta);
     });
   }
 
@@ -120,37 +115,25 @@ export class ApuestaComponent implements OnInit {
     return valores;
   }
 
-  public valoresByTipoCatalogo(id_tipo_catalogo: number) {
-    return this.servi
-      .getTipoCatalogo(id_tipo_catalogo)
-      .pipe(map((data) => data));
+  public valoresByEquipo() {
+    return this.servi.getEquiposTotales().pipe(map((data) => data));
   }
 
-  public async buscarValorEquipo(atributo: string, valor: string) {
+  public async buscarValorEquipo(valor: string) {
     let id_tipo_catalogo: number = 0;
     let equipos: any;
 
-    switch (atributo) {
-      case 'Tipo Documento':
-        equipos = await this.valoresByTipoCatalogo(4).toPromise();
-        break;
-      case 'Sexo':
-        equipos = await this.valoresByTipoCatalogo(6).toPromise();
-        break;
-      case 'Metodo De Pago':
-        equipos = await this.valoresByTipoCatalogo(5).toPromise();
-        break;
-    }
+    equipos = await this.valoresByEquipo().toPromise();
 
     for (let index = 0; index < equipos?.length; index++) {
-      if (valor == equipos[index].NombreCatalogo) {
-        id_tipo_catalogo = equipos[index].id_catalogo_universal;
+      if (valor == equipos[index].NombreEquipo) {
+        id_tipo_catalogo = equipos[index].id_equipos;
       }
     }
     return id_tipo_catalogo;
   }
 
-  public async BuscarCliente(Form: FormGroup) {
+  public async BuscarApuesta(Form: FormGroup) {
     const valores = {
       tipoBusqueda: Form.getRawValue()['TipoBusquedaCliente'],
       valorFiltro: Form.getRawValue()['ValorBusquedaCliente'],
@@ -170,6 +153,7 @@ export class ApuestaComponent implements OnInit {
       case 'id_apuestas':
         this.servi.getApuestaByID(valores?.valorFiltro).subscribe((data) => {
           this.apuestasFiltradas = data;
+          this.apuestaModificable = data;
         });
         break;
       default:
@@ -177,8 +161,8 @@ export class ApuestaComponent implements OnInit {
     }
   }
 
-  public getEquipoByParido() {
-    const values = this.FormCrearApuesta.getRawValue()['PartidoApuesta'];
+  public getEquipoByParido(form: FormGroup) {
+    const values = form.getRawValue()['PartidoApuesta'];
     for (let index = 0; index < this.Partidos.length; index++) {
       if (this.Partidos[index].id_partidos == values) {
         this.equiposByPartido = [
@@ -192,12 +176,9 @@ export class ApuestaComponent implements OnInit {
   public async registrarApuesta() {
     let newApuesta: any = {};
     const values = this.FormCrearApuesta.getRawValue();
-    console.log(values);
-
     for (const key in values) {
       if (key == 'EquipoApuesta') {
         newApuesta[key.replace(/ /g, '')] = await this.buscarValorEquipo(
-          key,
           values[key]
         );
       } else {
@@ -205,35 +186,38 @@ export class ApuestaComponent implements OnInit {
       }
     }
 
-    // try {
-    //   const res = await this.servi.CrearCliente(newApuesta);
-    //   console.log(newApuesta);
-    //   this.FormCrearApuesta.reset();
-    //   this.consultaApuestasTotales();
-    //   console.log(res);
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const res = await this.servi.CrearApuesta(newApuesta);
+      console.log(newApuesta);
+      this.FormCrearApuesta.reset();
+      this.consultaApuestasTotales();
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  public async modificarCliente() {
-    let updateCliente: any = {};
+  public async modificarApuesta() {
+    let updateApuesta: any = {};
     const values = this.apuestasFiltradas[0];
     for (const key in values) {
-      if (key == 'Tipo Documento' || key == 'Sexo' || key == 'Metodo De Pago') {
-        updateCliente[key.replace(/ /g, '')] = await this.buscarValorEquipo(
-          key,
+      if (key == 'EquipoApuesta') {
+        updateApuesta[key.replace(/ /g, '')] = await this.buscarValorEquipo(
           values[key]
         );
-      } else {
-        updateCliente[key.replace(/ /g, '')] = values[key];
+      } else if(key=='Cliente'){
+        updateApuesta['TicketApuesta'] = values[key];
+      }
+      else {
+        updateApuesta[key.replace(/ /g, '')] = values[key];
       }
     }
+    console.log(updateApuesta);
     try {
-      const res = await this.servi.ModificarCliente(updateCliente);
-      console.log(updateCliente);
+      const res = await this.servi.ModificarApuesta(updateApuesta);
+      console.log(updateApuesta);
+      this.FormModificarApuesta.reset();
       this.consultaApuestasTotales();
-      this.InputModificar();
       console.log(res);
     } catch (error) {
       console.log(error);
@@ -241,6 +225,7 @@ export class ApuestaComponent implements OnInit {
   }
 
   public InputModificar() {
+    console.log(this.apuestaModificable, this.apuestasFiltradas);
     if (this.showInputModificar == true) this.showInputModificar = false;
     else {
       this.showInputModificar = true;
@@ -252,7 +237,7 @@ export class ApuestaComponent implements OnInit {
     this.consultaClientesTotales();
     this.consultaPartidosTotales();
     this.consultaTicketsTotales();
-    this.FormBusquedaCliente = this.formBuilder.group({
+    this.FormBusquedaApuesta = this.formBuilder.group({
       TipoBusquedaCliente: [],
       ValorBusquedaCliente: '',
     });
@@ -260,19 +245,13 @@ export class ApuestaComponent implements OnInit {
       PartidoApuesta: 0,
       TicketApuesta: 0,
       'Monto Apuesta': 10000,
-      EquipoApuesta:'',
+      EquipoApuesta: '',
     });
-    this.FormModificarCliente = this.formBuilder.group({
-      TipoBusquedaCliente: [],
-      ValorBusquedaCliente: '',
-      'Primer Nombre': '',
-      'Segundo Nombre': '',
-      'Primer Apellido': '',
-      'Segundo Apellido': '',
-      'Tipo Documento': '',
-      Sexo: '',
-      'Metodo De Pago': '',
-      'Numero Documento': '',
+    this.FormModificarApuesta = this.formBuilder.group({
+      PartidoApuesta: 0,
+      TicketApuesta: 0,
+      'Monto Apuesta': 0,
+      EquipoApuesta: '',
     });
   }
 }
