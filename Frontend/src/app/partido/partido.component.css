@@ -1,6 +1,8 @@
 div.listaPartido,
 div.creaPartido,
-div.editPartido{
+div.editPartido,
+div.listaPartidoByDeporte,
+div.ConsultarPartido{
   position: relative;
   left: 0; /* Reiniciamos la posición a la izquierda */
   border: 3px solid rgb(59, 61, 134); /* Cambiar el color de borde según la categoría */

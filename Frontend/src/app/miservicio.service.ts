@@ -147,9 +147,6 @@ export class MiservicioService {
     return this.http.get(this.Url + '/Ticket/' + id, httpOptions);
   }
 
-  // getlListCatologoDeporte(tipcat: any): Observable<any> {
-  //   return this.http.get(this.Url + '/Universal' + tipcat, httpOptions);
-  // }
 
   getPartidoSeleccionado(id_ticket: any): Observable<any> {
     return this.http.get(this.Url + '/Partido/id/' + id_ticket, httpOptions);
@@ -160,6 +157,13 @@ export class MiservicioService {
       this.http.put(this.Url + '/Partido', Dato, httpOptions).toPromise();
     });
   }
-  
+  //Para obtiener los deportes totales pero en realidad estoy obteniendo los equipos
+  getDeportesTotales(): Observable<any> {
+    return this.http.get(this.Url + '/Equipo', httpOptions);
+  }
+
+  getPartidoTipDeporte(cadoc: any): Observable<any> {
+    return this.http.get(this.Url + '/Equipo/' + cadoc, httpOptions);
+  }
 
 }

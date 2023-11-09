@@ -34,6 +34,8 @@ export class PartidoComponent implements OnInit {
   PartidoUniT: any = [];
   //Editar
   PartidoCataEdi: any = [];
+  //Consultar
+  DeporteCataRead: any = [];
 
   //Consulta general por equipo
   equiposTotales: any = [];
@@ -74,15 +76,23 @@ export class PartidoComponent implements OnInit {
 
   })
 
+  ConsultarPartidoBYIdU = new FormGroup({
+    CBPartidoRead: new FormControl(),
+    textEquipoLocalRead: new FormControl(),
+    textEquipoVisitanteRead: new FormControl(),
+    textFechaPartidoRead: new FormControl(),
+    textDeporteRead: new FormControl(),
+  })
+
 
   // ConsultarPartidoByEquipoU = new FormGroup({
   //   CBPartidoEquipo: new FormControl(),
   // });
 
 
-  // ConsultarPartidoByDeporte = new FormGroup({
-  //   CBPartidoDeporte: new FormControl(),
-  // })
+  ConsultarPartidoByDeporteU = new FormGroup({
+    CBPartidoDeporte: new FormControl(),
+  })
 
   public consultaPartidosTotales(list: boolean) {
     if (this.controlLista == 1) {
@@ -172,7 +182,35 @@ export class PartidoComponent implements OnInit {
   //   );
   // }
 
-  
+  //El metodo de la consulta que pues en este caso no sirve de mucho
+  public consultaDeportesTotales(){
+    this.servi.getDeportesTotales().subscribe(
+      (data:{equipos:[]})=>{
+        this.deportesTotales = data;
+      },(error)=>{
+        console.error(error + ' ');
+      }
+    )
+  }
+
+  //Intento de metodo para traerlo por deporte hice una consulta a equipos pero no
+  // pero la cague porque era a catalogo univrsal para obtener los deportes
+  public SelTipDeporte() {
+    this.BuscarEvalor = this.ConsultarPartidoByDeporteU.getRawValue()['CBPartidoDeporte'];
+    this.servi.getPartidoTipDeporte(this.BuscarEvalor).subscribe(
+      (data: any) => {
+        this.PartidoUniTDeporte = data;
+        console.log(this.PartidoUniTDeporte);
+
+        this.tituloPartidoUniListaDeporte = 'Deporte a Consultar';
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
+
+
 
 
   insertarNuevoPartido() {
@@ -218,6 +256,25 @@ export class PartidoComponent implements OnInit {
     );
   }
 
+  //Intento de metodo para consultar el partido por id
+  public SelPartidoConsultar() {
+    this.BuscarEvalor = this.ConsultarPartidoBYIdU.getRawValue()['CBPartidoRead'];
+
+    this.servi.getPartidoSeleccionado(this.BuscarEvalor).subscribe(
+      (data: any) => {
+        this.PartidoCataEdi = data;
+        console.log(this.PartidoCataEdi);
+
+        this.titloPartidoBuscado = 'Partido a Consultar';
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
+
+
+
   
 
   public ActualizarPartido() {
@@ -250,6 +307,8 @@ export class PartidoComponent implements OnInit {
 
     this.crearPartidoU.reset();
   }
+
+
 
   ngOnInit(): void {
     this.listarPartidosTotales = this.formBuilder.group({});

@@ -192,7 +192,6 @@ export class TicketComponent implements OnInit {
 
 
   
-
   public SelTicketEditar() {
     this.BuscarEvalor = this.ActTicketU.getRawValue()['CBTicketEdi'];
 
