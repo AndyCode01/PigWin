@@ -25,7 +25,7 @@ TicketModelo.getTicketByTip = function (tip, callback) {
   if (connection) {
     var sql =
       "SELECT t.id_tickets, " +
-      "t.FechaTicket, " +
+      "DATE_FORMAT(t.FechaTicket, '  %d/%m/%Y %H:%i ') AS 'FechaTicket', " +
       "pv.NombrePuntoVenta, " +
       "c.PrimerNombre, " +
       "c.PrimerApellido, " +
@@ -50,7 +50,7 @@ TicketModelo.getTicketById = function (id, callback) {
   if (connection) {
     var sql =
       "SELECT t.id_tickets, " +
-      "DATE_FORMAT(t.FechaTicket, ' %H:%i %d/%m/%Y ') AS 'FechaTicket', " +
+      "DATE_FORMAT(t.FechaTicket, '  %d/%m/%Y %H:%i ') AS 'FechaTicket', " +
       "pv.NombrePuntoVenta, " +
       "t.PuntoVentaTicket, " +
       "t.ClienteTicket " +

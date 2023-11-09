@@ -138,6 +138,35 @@ export class MiservicioService {
     return this.http.get(this.Url + '/Equipo', httpOptions);
   }
 
+  async crearPartidoU(Dato: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.http.post(this.Url + '/Partido', Dato, httpOptions).toPromise();
+    });
+  }
+
+  getPartidoTipEquipo(id: any): Observable<any> {
+    return this.http.get(this.Url + '/Ticket/' + id, httpOptions);
+  }
+
+
+  getPartidoSeleccionado(id_ticket: any): Observable<any> {
+    return this.http.get(this.Url + '/Partido/id/' + id_ticket, httpOptions);
+  }
+
+  async ActualizarPartidoU(Dato: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.http.put(this.Url + '/Partido', Dato, httpOptions).toPromise();
+    });
+  }
+  //Para obtiener los deportes totales pero en realidad estoy obteniendo los equipos
+  getDeportesTotales(): Observable<any> {
+    return this.http.get(this.Url + '/Equipo', httpOptions);
+  }
+
+  getPartidoTipDeporte(cadoc: any): Observable<any> {
+    return this.http.get(this.Url + '/Equipo/' + cadoc, httpOptions);
+  }
+
   // Tabla clientes
 
   getClientesTotales(): Observable<any> {
