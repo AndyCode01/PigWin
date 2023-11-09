@@ -164,4 +164,17 @@ export class MiservicioService {
       }
     });
   }
+
+  async ModificarCliente(Dato: any): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.http
+          .put(this.Url + '/Cliente', Dato, httpOptions)
+          .toPromise();
+        resolve(res);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
 }
