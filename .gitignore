@@ -1,2 +1,4 @@
 node_modules
 config.json
+Backend/pnpm-lock.yaml
+Frontend/pnpm-lock.yaml
