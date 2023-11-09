@@ -1,0 +1,102 @@
+
+<body>
+  <div class="listaU">
+    <h1>Todos las apuestas</h1>
+    <button (click)="mostrarTabla()">Mostrar Apuestas</button>
+    <button (click)="limpiarLista()">Limpiar</button>
+      <table *ngIf="showTable">
+        <thead>
+          <th *ngFor="let key of keysApuesta">{{key}}</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of Apuestas ">
+            <th *ngFor="let key of keysApuesta">{{cliente[key]}}</th>
+          </tr>
+        </tbody>
+      </table>
+  </div>
+  <br>
+  <div class="listaU">
+    <h1>Registro Apuesta</h1>
+    <form action="" [formGroup]="FormCrearApuesta">
+      <div style="display: flex; flex-wrap: wrap;">
+        <div style="margin: 10px;">
+          <label for="PartidoApuesta">Partido</label>
+          <select formControlName="PartidoApuesta" (change)="getEquipoByParido()">
+            <option *ngFor="let partido of Partidos" value="{{partido.id_partidos}}">{{partido.Equipo_Local}} vs {{partido.Equipo_Visitante}}</option>
+          </select>
+        </div>
+        <div style="margin: 10px;">
+          <label for="TicketApuesta">Cliente</label>
+          <select formControlName="TicketApuesta">
+            <option *ngFor="let ticket of Tickets" value="{{ticket.id_tickets}}">{{ticket.cliente}}</option>
+          </select>
+        </div>
+        <div style="margin: 10px;">
+          <label for="EquipoApuesta">Equipo de la apuesta</label>
+          <select formControlName="EquipoApuesta">
+            <option *ngFor="let equipo of equiposByPartido" value="{{equipo}}">{{equipo}}</option>
+          </select>
+        </div>
+        <div style="margin: 10px;" *ngFor="let atributo of ['Monto Apuesta']">
+        <label for="{{atributo}}">{{atributo}}</label>
+        <input type="number" min="10000" step="5000" formControlName="{{atributo}}">
+        </div>
+
+      </div>
+    </form>
+    <button (click)="registrarApuesta()">Crear Cliente</button>
+  </div>
+  <br>
+  <div class="listaU">
+    <h1>Busqueda Apuesta</h1>
+    <form action="" [formGroup]="FormBusquedaCliente">
+      <select formControlName="TipoBusquedaCliente" (change)="filtros(FormBusquedaCliente)">
+      <option value="id_apuestas">id</option>
+      <option value="Cliente">Cliente</option>
+      </select>
+      <select *ngIf="!switchInputBusqueda" formControlName="ValorBusquedaCliente">
+      <option *ngFor="let opcion of valuefilters" value="{{opcion}}">{{opcion}}</option>
+      </select>
+      <select *ngIf="switchInputBusqueda" formControlName="ValorBusquedaCliente">
+        <option *ngFor="let valor of Clientes" value="{{valor.id_clientes}}">{{valor['Primer Nombre']}} {{valor['Segundo Nombre']}} {{valor['Primer Apellido']}}</option>
+      </select>
+    </form>
+    <button (click)="BuscarCliente(FormBusquedaCliente)">Busqueda Cliente</button>
+    <h3 *ngIf="error">No se encuentran apuestas registradas a este cliente</h3>
+    <table *ngIf="apuestasFiltradas.length >=1">
+        <thead>
+          <th *ngFor="let key of keysApuesta">{{key}}</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of apuestasFiltradas ">
+            <th *ngFor="let key of keysApuesta">{{cliente[key]}}</th>
+          </tr>
+        </tbody>
+      </table>
+    <h1>Modificar Apuesta</h1>
+    <button (click)="InputModificar()" *ngIf="apuestasFiltradas.length >=1 && !showInputModificar">Deseo modificar el cliente</button>
+    <h3 *ngIf="apuestasFiltradas.length <1">Para poder modificar un cliente antes debes buscar cual quieres modificar</h3>
+    <h3 *ngIf="apuestasFiltradas.length >1 && showInputModificar">Solo puedes modificar un cliente a la vez, usa la busqueda por id e intenta nuevamente</h3>
+    <form action="" [formGroup]="FormModificarCliente">
+      <div *ngIf="showInputModificar && apuestasFiltradas.length ==1">
+        <div style="display: flex; flex-wrap: wrap;" *ngFor="let cliente of apuestasFiltradas">
+
+          <div style="margin: 10px;" *ngFor="let atributo of ['Primer Nombre','Segundo Nombre','Primer Apellido','Segundo Apellido', 'Numero Documento']">
+          <label for="{{atributo}}">{{atributo}}</label>
+          <input type="text" [(ngModel)]="cliente[atributo]" [ngModelOptions]="{standalone: true}">
+          </div>
+          <div style="margin: 10px;" *ngFor="let atributo of ['Tipo Documento','Sexo','Metodo De Pago']">
+            <label for="{{atributo}}">{{atributo}}</label>
+            <select [(ngModel)]="cliente[atributo]" [ngModelOptions]="{standalone: true}" >
+              <option *ngFor="let valor of listaValoresAtributo(atributo)" value="{{valor}}">{{valor}}</option>
+            </select>
+          </div>
+        </div>
+        <br>
+        <button (click)="modificarCliente()">Modificar Cliente</button>
+      </div>
+    </form>
+  </div>
+</body>
+

@@ -5,18 +5,19 @@ var ApuestaModelo = {};
 ApuestaModelo.getApuestas = function (callback) {
   if (connection) {
     var sql =
-    "SELECT a.id_apuestas, " +
-    "CONCAT(c.PrimerNombre, ' ', c.SegundoNombre, ' ', c.PrimerApellido, ' ', c.SegundoApellido) AS 'Cliente', " +
-    "CONCAT(e1.NombreEquipo, ' vs ', e2.NombreEquipo) AS 'Partido Apuesta', " +
-    "e3.NombreEquipo AS 'Equipo Apuesta', " +
-    "a.MontoApuesta AS 'Monto Apuesta' " +
-    "FROM apuestas AS a " +
-    "INNER JOIN tickets AS t ON a.TicketApuesta = t.id_tickets " +
-    "INNER JOIN clientes AS c ON t.ClienteTicket = c.id_clientes " +
-    "INNER JOIN partidos AS p ON a.PartidoApuesta = p.id_partidos " +
-    "INNER JOIN equipos AS e1 ON p.EquipoLocal = e1.id_equipos " +
-    "INNER JOIN equipos AS e2 ON p.EquipoVisitante = e2.id_equipos " +
-    "INNER JOIN equipos AS e3 ON a.EquipoApuesta = e3.id_equipos; ";
+      "SELECT a.id_apuestas, " +
+      "CONCAT(c.PrimerNombre, ' ', c.SegundoNombre, ' ', c.PrimerApellido, ' ', c.SegundoApellido) AS 'Cliente', " +
+      "CONCAT(e1.NombreEquipo, ' vs ', e2.NombreEquipo) AS 'Partido Apuesta', " +
+      "e3.NombreEquipo AS 'Equipo Apuesta', " +
+      "a.MontoApuesta AS 'Monto Apuesta' " +
+      "FROM apuestas AS a " +
+      "INNER JOIN tickets AS t ON a.TicketApuesta = t.id_tickets " +
+      "INNER JOIN clientes AS c ON t.ClienteTicket = c.id_clientes " +
+      "INNER JOIN partidos AS p ON a.PartidoApuesta = p.id_partidos " +
+      "INNER JOIN equipos AS e1 ON p.EquipoLocal = e1.id_equipos " +
+      "INNER JOIN equipos AS e2 ON p.EquipoVisitante = e2.id_equipos " +
+      "INNER JOIN equipos AS e3 ON a.EquipoApuesta = e3.id_equipos " +
+      "ORDER BY id_apuestas;";
 
     connection.query(sql, function (error, rows) {
       if (error) {
