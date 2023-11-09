@@ -20,7 +20,7 @@
   <div class="listaU">
     <h1>Busqueda Cliente</h1>
     <form action="" [formGroup]="FormBusquedaCliente">
-      <select formControlName="TipoBusquedaCliente" (change)="filtros()">
+      <select formControlName="TipoBusquedaCliente" (change)="filtros(FormBusquedaCliente)">
       <option value="id_clientes">id</option>
       <option value="Tipo Documento">Tipo de Documento</option>
       </select>
@@ -28,7 +28,7 @@
       <option *ngFor="let opcion of valuefilters" value="{{opcion}}">{{opcion}}</option>
       </select>
     </form>
-    <button (click)="BuscarCliente()">Busqueda Cliente</button>
+    <button (click)="BuscarCliente(FormBusquedaCliente)">Busqueda Cliente</button>
     <table *ngIf="clientesFiltrados.length >=1">
         <thead>
           <th *ngFor="let key of keysCliente">{{key}}</th>
@@ -60,7 +60,26 @@
     <button (click)="registrarCliente()">Crear Cliente</button>
   </div>
   <br>
-  <div>
+  <div class="listaU">
+    <h1>Modificar cliente</h1>
+    <form action="" [formGroup]="FormModificarCliente">
+      <div *ngIf="clientesFiltrados.length >=1">
+        <div style="display: flex; flex-wrap: wrap;" *ngFor="let cliente of clientesFiltrados">
+
+          <div style="margin: 10px;" *ngFor="let atributo of ['Primer Nombre','Segundo Nombre','Primer Apellido','Segundo Apellido', 'Numero Documento']">
+          <label for="{{atributo}}">{{atributo}}</label>
+          <input type="text" value="{{cliente[atributo]}}" >
+          </div>
+          <div style="margin: 10px;" *ngFor="let atributo of ['Tipo Documento','Sexo','Metodo De Pago']">
+            <label for="{{atributo}}">{{atributo}}</label>
+            <select [(ngModel)]="cliente[atributo]" >
+              <option *ngFor="let valor of listaValoresAtributo(atributo)" value="{{valor}}">{{valor}}</option>
+            </select>
+          </div>
+      </div>
+      </div>
+    </form>
+
   </div>
   <div>
 

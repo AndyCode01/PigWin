@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MiservicioService } from '../miservicio.service';
-import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -39,14 +38,27 @@ export class ClienteComponent implements OnInit {
     'Tipo Documento': new FormControl(),
     Sexo: new FormControl(),
     'Metodo De Pago': new FormControl(),
-    'NumeroDocumento': new FormControl()
+    NumeroDocumento: new FormControl(),
+  });
+
+  FormModificarCliente = new FormGroup({
+    TipoBusquedaCliente: new FormControl(),
+    ValorBusquedaCliente: new FormControl(),
+    'Primer Nombre': new FormControl(),
+    'Segundo Nombre': new FormControl(),
+    'Primer Apellido': new FormControl(),
+    'Segundo Apellido': new FormControl(),
+    'Tipo Documento': new FormControl(),
+    Sexo: new FormControl(),
+    'Metodo De Pago': new FormControl(),
+    NumeroDocumento: new FormControl(),
   });
 
   public consultaClientesTotales() {
     this.servi.getClientesTotales().subscribe((data) => {
       this.Clientes = data;
       this.keysCliente = Object.keys(this.Clientes[0]);
-      this.filtros();
+      this.filtros(this.FormBusquedaCliente);
     });
   }
 
@@ -59,9 +71,8 @@ export class ClienteComponent implements OnInit {
       this.showTable = false;
   }
 
-  public filtros() {
-    const tipoBusqueda =
-      this.FormBusquedaCliente.getRawValue()['TipoBusquedaCliente'];
+  public filtros(Form:FormGroup) {
+    const tipoBusqueda = Form.getRawValue()['TipoBusquedaCliente'];
     this.valuefilters = this.listaValoresAtributo(tipoBusqueda);
   }
 
@@ -79,7 +90,9 @@ export class ClienteComponent implements OnInit {
   }
 
   public valoresByTipoCatalogo(id_tipo_catalogo: number) {
-    return this.servi.getTipoCatalogo(id_tipo_catalogo).pipe(map((data) => data));
+    return this.servi
+      .getTipoCatalogo(id_tipo_catalogo)
+      .pipe(map((data) => data));
   }
 
   public async buscarValorCatalogo(atributo: string, valor: string) {
@@ -106,38 +119,42 @@ export class ClienteComponent implements OnInit {
     return id_tipo_catalogo;
   }
 
-  public async BuscarCliente() {
-    const tipoBusqueda =
-      this.FormBusquedaCliente.getRawValue()['TipoBusquedaCliente'];
-    const valorFiltro =
-      this.FormBusquedaCliente.getRawValue()['ValorBusquedaCliente'];
-    if (Number.isNaN(Number.parseInt(valorFiltro))) {
+  public async BuscarCliente(Form: FormGroup) {
+    const valores = {
+      tipoBusqueda: Form.getRawValue()['TipoBusquedaCliente'],
+      valorFiltro: Form.getRawValue()['ValorBusquedaCliente'],
+    };
+    console.log(valores);
+
+    if (Number.isNaN(Number.parseInt(valores?.valorFiltro))) {
       let id_tipo_documento = await this.buscarValorCatalogo(
-        tipoBusqueda,
-        valorFiltro
-      ); ;
+        valores?.tipoBusqueda,
+        valores?.valorFiltro
+      );
       this.servi
         .getClienteByTipoDocumento(id_tipo_documento)
         .subscribe((data) => {
           this.clientesFiltrados = data;
         });
     } else {
-      this.servi.getClienteByID(valorFiltro).subscribe((data) => {
+      this.servi.getClienteByID(valores?.valorFiltro).subscribe((data) => {
         this.clientesFiltrados = data;
       });
     }
+    console.log(this.clientesFiltrados);
+
   }
 
   public async registrarCliente() {
     let newCliente: any = {};
     const values = this.FormCrearCliente.getRawValue();
     for (const key in values) {
-      if (key == 'Tipo Documento' || key == 'Sexo' || key == 'Metodo De Pago')
-        {newCliente[key.replace(/ /g, '')] = await this.buscarValorCatalogo(
+      if (key == 'Tipo Documento' || key == 'Sexo' || key == 'Metodo De Pago') {
+        newCliente[key.replace(/ /g, '')] = await this.buscarValorCatalogo(
           key,
           values[key]
-        );}
-      else {
+        );
+      } else {
         newCliente[key.replace(/ /g, '')] = values[key];
       }
     }
@@ -167,7 +184,19 @@ export class ClienteComponent implements OnInit {
       'Tipo Documento': '',
       Sexo: '',
       'Metodo De Pago': '',
-      'NumeroDocumento':''
+      NumeroDocumento: '',
+    });
+    this.FormModificarCliente = this.formBuilder.group({
+      TipoBusquedaCliente: [],
+      ValorBusquedaCliente: '',
+      'Primer Nombre': '',
+      'Segundo Nombre': '',
+      'Primer Apellido': '',
+      'Segundo Apellido': '',
+      'Tipo Documento': '',
+      Sexo: '',
+      'Metodo De Pago': '',
+      NumeroDocumento: '',
     });
   }
 }
