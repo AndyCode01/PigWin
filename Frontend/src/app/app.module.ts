@@ -16,6 +16,8 @@ import { TicketComponent } from './ticket/ticket.component';
 import { PuntoventaComponent } from './puntoventa/puntoventa.component';
 import { PartidoComponent } from './partido/partido.component';
 import { ClienteComponent } from './cliente/cliente.component';
+import { NgSelectModule } from '@ng-select/ng-select';
+
 
 
 const appRoutes: Routes = [
@@ -47,7 +49,14 @@ const appRoutes: Routes = [
 ];
 
 @NgModule({
-  declarations: [AppComponent, CatauniversalComponent, TicketComponent, PuntoventaComponent, PartidoComponent, ClienteComponent],
+  declarations: [
+    AppComponent,
+    CatauniversalComponent,
+    TicketComponent,
+    PuntoventaComponent,
+    PartidoComponent,
+    ClienteComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -56,6 +65,7 @@ const appRoutes: Routes = [
     HttpModule,
     RouterModule.forRoot(appRoutes),
     HttpClientModule,
+    NgSelectModule,
   ],
   providers: [MiservicioService],
   bootstrap: [AppComponent],
