@@ -206,4 +206,25 @@ export class MiservicioService {
       }
     });
   }
+
+  // Equipos
+  getEquipoByID(id_equipo: number): Observable<any> {
+    return this.http.get(this.Url + `/Equipo/id/${id_equipo}`, httpOptions);
+  }
+
+  async CrearEquipo(Dato: any): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.http
+          .post(this.Url + '/Equipo', Dato, httpOptions)
+          .toPromise();
+        resolve(res);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+
 }
+
