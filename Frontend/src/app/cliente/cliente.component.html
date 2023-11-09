@@ -16,7 +16,25 @@
       </table>
   </div>
   <br>
-
+  <div class="listaU">
+    <h1>Registro Cliente</h1>
+    <form action="" [formGroup]="FormCrearCliente">
+      <div style="display: flex; flex-wrap: wrap;">
+        <div style="margin: 10px;" *ngFor="let atributo of ['Primer Nombre','Segundo Nombre','Primer Apellido','Segundo Apellido', 'NumeroDocumento']">
+        <label for="{{atributo}}">{{atributo}}</label>
+        <input type="text" formControlName="{{atributo}}">
+        </div>
+        <div style="margin: 10px;" *ngFor="let atributo of ['Tipo Documento','Sexo','Metodo De Pago']">
+          <label for="{{atributo}}">{{atributo}}</label>
+          <select formControlName="{{atributo}}">
+            <option *ngFor="let valor of listaValoresAtributo(atributo)" value="{{valor}}">{{valor}}</option>
+          </select>
+        </div>
+      </div>
+    </form>
+    <button (click)="registrarCliente()">Crear Cliente</button>
+  </div>
+  <br>
   <div class="listaU">
     <h1>Busqueda Cliente</h1>
     <form action="" [formGroup]="FormBusquedaCliente">
@@ -39,49 +57,28 @@
           </tr>
         </tbody>
       </table>
-  </div>
-  <br>
-  <div class="listaU">
-    <h1>Registro Cliente</h1>
-    <form action="" [formGroup]="FormCrearCliente">
-      <div style="display: flex; flex-wrap: wrap;">
-        <div style="margin: 10px;" *ngFor="let atributo of ['Primer Nombre','Segundo Nombre','Primer Apellido','Segundo Apellido', 'NumeroDocumento']">
-        <label for="{{atributo}}">{{atributo}}</label>
-        <input type="text" formControlName="{{atributo}}">
-        </div>
-        <div style="margin: 10px;" *ngFor="let atributo of ['Tipo Documento','Sexo','Metodo De Pago']">
-          <label for="{{atributo}}">{{atributo}}</label>
-          <select formControlName="{{atributo}}">
-            <option *ngFor="let valor of listaValoresAtributo(atributo)" value="{{valor}}">{{valor}}</option>
-          </select>
-        </div>
-      </div>
-    </form>
-    <button (click)="registrarCliente()">Crear Cliente</button>
-  </div>
-  <br>
-  <div class="listaU">
     <h1>Modificar cliente</h1>
+    <button (click)="InputModificar()" *ngIf="clientesFiltrados.length >=1 && !showInputModificar">Deseo modificar el cliente</button>
+    <h3 *ngIf="clientesFiltrados.length <1">Para poder modificar un cliente antes debes buscar cual quieres modificar</h3>
+    <h3 *ngIf="clientesFiltrados.length >1 && showInputModificar">Solo puedes modificar un cliente a la vez, usa la busqueda por id e intenta nuevamente</h3>
     <form action="" [formGroup]="FormModificarCliente">
-      <div *ngIf="clientesFiltrados.length >=1">
+      <div *ngIf="showInputModificar && clientesFiltrados.length ==1">
         <div style="display: flex; flex-wrap: wrap;" *ngFor="let cliente of clientesFiltrados">
 
           <div style="margin: 10px;" *ngFor="let atributo of ['Primer Nombre','Segundo Nombre','Primer Apellido','Segundo Apellido', 'Numero Documento']">
           <label for="{{atributo}}">{{atributo}}</label>
-          <input type="text" value="{{cliente[atributo]}}" >
+          <input type="text" [(ngModel)]="cliente[atributo]" [ngModelOptions]="{standalone: true}">
           </div>
           <div style="margin: 10px;" *ngFor="let atributo of ['Tipo Documento','Sexo','Metodo De Pago']">
             <label for="{{atributo}}">{{atributo}}</label>
-            <select [(ngModel)]="cliente[atributo]" >
+            <select [(ngModel)]="cliente[atributo]" [ngModelOptions]="{standalone: true}" >
               <option *ngFor="let valor of listaValoresAtributo(atributo)" value="{{valor}}">{{valor}}</option>
             </select>
           </div>
-      </div>
+        </div>
+        <br>
+        <button (click)="modificarCliente()">Modificar Cliente</button>
       </div>
     </form>
-
-  </div>
-  <div>
-
   </div>
 </body>

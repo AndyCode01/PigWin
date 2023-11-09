@@ -25,6 +25,8 @@ export class ClienteComponent implements OnInit {
   filters: Array<string> = [];
   valuefilters: Array<string> = [];
 
+  showInputModificar: boolean = false;
+
   FormBusquedaCliente = new FormGroup({
     TipoBusquedaCliente: new FormControl(),
     ValorBusquedaCliente: new FormControl(),
@@ -38,7 +40,7 @@ export class ClienteComponent implements OnInit {
     'Tipo Documento': new FormControl(),
     Sexo: new FormControl(),
     'Metodo De Pago': new FormControl(),
-    NumeroDocumento: new FormControl(),
+    'Numero Documento': new FormControl(),
   });
 
   FormModificarCliente = new FormGroup({
@@ -51,7 +53,7 @@ export class ClienteComponent implements OnInit {
     'Tipo Documento': new FormControl(),
     Sexo: new FormControl(),
     'Metodo De Pago': new FormControl(),
-    NumeroDocumento: new FormControl(),
+    'Numero Documento': new FormControl(),
   });
 
   public consultaClientesTotales() {
@@ -71,7 +73,7 @@ export class ClienteComponent implements OnInit {
       this.showTable = false;
   }
 
-  public filtros(Form:FormGroup) {
+  public filtros(Form: FormGroup) {
     const tipoBusqueda = Form.getRawValue()['TipoBusquedaCliente'];
     this.valuefilters = this.listaValoresAtributo(tipoBusqueda);
   }
@@ -124,7 +126,6 @@ export class ClienteComponent implements OnInit {
       tipoBusqueda: Form.getRawValue()['TipoBusquedaCliente'],
       valorFiltro: Form.getRawValue()['ValorBusquedaCliente'],
     };
-    console.log(valores);
 
     if (Number.isNaN(Number.parseInt(valores?.valorFiltro))) {
       let id_tipo_documento = await this.buscarValorCatalogo(
@@ -141,8 +142,6 @@ export class ClienteComponent implements OnInit {
         this.clientesFiltrados = data;
       });
     }
-    console.log(this.clientesFiltrados);
-
   }
 
   public async registrarCliente() {
@@ -167,6 +166,38 @@ export class ClienteComponent implements OnInit {
       console.log(res);
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  public async modificarCliente() {
+    let updateCliente: any = {};
+    const values = this.clientesFiltrados[0]
+    for (const key in values) {
+      if (key == 'Tipo Documento' || key == 'Sexo' || key == 'Metodo De Pago') {
+        updateCliente[key.replace(/ /g, '')] = await this.buscarValorCatalogo(
+          key,
+          values[key]
+        );
+      } else {
+        updateCliente[key.replace(/ /g, '')] = values[key];
+
+      }
+    }
+    try {
+      const res = await this.servi.ModificarCliente(updateCliente);
+      console.log(updateCliente);
+      this.consultaClientesTotales();
+      this.InputModificar();
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  public InputModificar() {
+    if (this.showInputModificar == true) this.showInputModificar = false;
+    else {
+      this.showInputModificar = true;
     }
   }
 
@@ -196,7 +227,7 @@ export class ClienteComponent implements OnInit {
       'Tipo Documento': '',
       Sexo: '',
       'Metodo De Pago': '',
-      NumeroDocumento: '',
+      'Numero Documento': '',
     });
   }
 }
