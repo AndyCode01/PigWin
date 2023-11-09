@@ -218,6 +218,8 @@ export class PartidoComponent implements OnInit {
     );
   }
 
+  
+
   public ActualizarPartido() {
     //variables para armar el JSON que se va a enviar al Back-End
     var datosvalo1 = this.ActPartidoU.getRawValue()['CBPartidoEdi'];
