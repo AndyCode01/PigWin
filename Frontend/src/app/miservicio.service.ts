@@ -46,6 +46,9 @@ export class MiservicioService {
     return this.http.get(this.Url + '/Universal' + tipcat, httpOptions);
   }
 
+  getTipoCatalogo(tipo_catalogo: number): Observable<any> {
+    return this.http.get(this.Url + `/Universal/${tipo_catalogo}`, httpOptions);
+  }
   //-------------------------------------------------------------
   //-------------------------------------------------------------
 
@@ -53,12 +56,10 @@ export class MiservicioService {
     return this.http.get(this.Url + '/Universal' + IdCat, httpOptions);
   } // Método para insertar un nuevo Catalogo
 
-
-   getlCatEdit(Id: any): Observable<any> {
-      return this.http.get(this.Url + '/Universal/id/' + Id, httpOptions);
-  } 
+  getlCatEdit(Id: any): Observable<any> {
+    return this.http.get(this.Url + '/Universal/id/' + Id, httpOptions);
+  }
   //-------------------------------------------------------------
- 
 
   async CrearCatalogoU(Dato: any): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -66,14 +67,11 @@ export class MiservicioService {
     });
   } //-------------------------------------------------------------
 
-
   async ActualizarCatalogoU(Dato: any): Promise<any> {
     return new Promise((resolve, reject) => {
       this.http.put(this.Url + '/Universal', Dato, httpOptions).toPromise();
     });
   }
-
-
 
   // Tabla tickets
 
@@ -118,7 +116,10 @@ export class MiservicioService {
   }
 
   getPuntoVentaSeleccionado(id_punto_venta: any): Observable<any> {
-    return this.http.get(this.Url + '/PuntoVenta/id/' + id_punto_venta, httpOptions);
+    return this.http.get(
+      this.Url + '/PuntoVenta/id/' + id_punto_venta,
+      httpOptions
+    );
   }
 
   async ActualizarPuntoVentaU(Dato: any): Promise<any> {
@@ -136,6 +137,31 @@ export class MiservicioService {
   getEquiposTotales(): Observable<any> {
     return this.http.get(this.Url + '/Equipo', httpOptions);
   }
-  
 
+  // Tabla clientes
+
+  getClientesTotales(): Observable<any> {
+    return this.http.get(this.Url + '/Cliente', httpOptions);
+  }
+
+  getClienteByID(id_cliente: number): Observable<any> {
+    return this.http.get(this.Url + `/Cliente/id/${id_cliente}`, httpOptions);
+  }
+
+  getClienteByTipoDocumento(tipo_documento: number): Observable<any> {
+    return this.http.get(this.Url + `/Cliente/${tipo_documento}`, httpOptions);
+  }
+
+  async CrearCliente(Dato: any): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.http
+          .post(this.Url + '/Cliente', Dato, httpOptions)
+          .toPromise();
+        resolve(res);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
 }
