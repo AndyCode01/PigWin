@@ -148,7 +148,6 @@ export class MiservicioService {
     return this.http.get(this.Url + '/Ticket/' + id, httpOptions);
   }
 
-
   getPartidoSeleccionado(id_ticket: any): Observable<any> {
     return this.http.get(this.Url + '/Partido/id/' + id_ticket, httpOptions);
   }
@@ -199,6 +198,44 @@ export class MiservicioService {
       try {
         const res = await this.http
           .put(this.Url + '/Cliente', Dato, httpOptions)
+          .toPromise();
+        resolve(res);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  getApuestasTotales(): Observable<any> {
+    return this.http.get(this.Url + '/Apuesta', httpOptions);
+  }
+
+  getApuestaByID(id_cliente: number): Observable<any> {
+    return this.http.get(this.Url + `/Apuesta/id/${id_cliente}`, httpOptions);
+  }
+
+  getApuestaByCliente(id_cliente: number): Observable<any> {
+    return this.http.get(this.Url + `/Apuesta/${id_cliente}`, httpOptions);
+  }
+
+  async CrearApuesta(Dato: any): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.http
+          .post(this.Url + '/Apuesta', Dato, httpOptions)
+          .toPromise();
+        resolve(res);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  async ModificarApuesta(Dato: any): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.http
+          .put(this.Url + '/Apuesta', Dato, httpOptions)
           .toPromise();
         resolve(res);
       } catch (error) {
