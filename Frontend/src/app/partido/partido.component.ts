@@ -26,6 +26,7 @@ export class PartidoComponent implements OnInit {
   title = 'Manejo de Partidos';
   tituloPartidoLista = '';
   tituloPartidoUniListaEquipo = '';
+  tituloPartidoUniListaDeporte = '';
   titloPartidoBuscado = '';
   titloPartidoEditar = '';
 
@@ -35,10 +36,12 @@ export class PartidoComponent implements OnInit {
   PartidoCataEdi: any = [];
 
   //Consulta general por equipo
-  equiposTotales: any=[];
+  equiposTotales: any = [];
+  deportesTotales: any = [];
 
   //Por tipo
   PartidoUniTEquipo: any = [];
+  PartidoUniTDeporte: any = [];
 
   //Listar
   tablapartidostotales: any = [];
@@ -49,7 +52,6 @@ export class PartidoComponent implements OnInit {
   controlLista = 1;
 
   flag: boolean = false;
-  
 
   // form group
   listarPartidosTotales = new FormGroup({});
@@ -60,19 +62,33 @@ export class PartidoComponent implements OnInit {
     textNueFechaPartido: new FormControl(),
     textNueDeporte: new FormControl(),
     textNueGanadorPartido: new FormControl(),
+  });
+
+  ActPartidoU = new FormGroup({
+    CBPartidoEdi: new FormControl(),
+    textNueEquipoLocalEdi: new FormControl(),
+    textNueEquipoVisitanteEdi: new FormControl(),
+    textNueFechaPartidoEdi: new FormControl(),
+    textNueDeporteEdi: new FormControl(),
+    textNueGanadorPartidoEdi: new FormControl(),
+
   })
 
 
+  // ConsultarPartidoByEquipoU = new FormGroup({
+  //   CBPartidoEquipo: new FormControl(),
+  // });
 
-  ConsultarPartidoByEquipo = new FormGroup({
-    CBPartidoEquipo: new FormControl(),
-  })
 
-  public consultaPartidosTotales(list:boolean) {
+  // ConsultarPartidoByDeporte = new FormGroup({
+  //   CBPartidoDeporte: new FormControl(),
+  // })
+
+  public consultaPartidosTotales(list: boolean) {
     if (this.controlLista == 1) {
       this.servi.getPartidoTotal().subscribe(
-        (data:{partidos:[]}) => {
-          if(list==true)this.flag=list
+        (data: { partidos: [] }) => {
+          if (list == true) this.flag = list;
           this.PartidoUniT = data; //JSON.parse(data);
           console.log(this.PartidoUniT);
           this.tituloPartidoLista = 'Lista de Todos los partidos';
@@ -98,51 +114,84 @@ export class PartidoComponent implements OnInit {
     }
   }
 
-  public LimpiarLista(list:boolean) {
-    if(list==false)this.flag=list
+  public LimpiarLista(list: boolean) {
+    if (list == false) this.flag = list;
     this.controlLista = 0;
   }
 
-
   public consultaEquiposTotales() {
     this.servi.getEquiposTotales().subscribe(
-      (data:{equipos:[]})=>{
+      (data: { equipos: [] }) => {
         this.equiposTotales = data;
-      },(error)=>{
-        console.error(error + ' ');
-      }
-    )
-  }
-
-  
-  public SelTipEquipo() {
-    this.BuscarEvalor = this.ConsultarPartidoByEquipo.getRawValue()['CBPartidoEquipo'];
-    this.servi.getTicketTipPuntoVenta(this.BuscarEvalor).subscribe(
-      (data: any) => {
-        this.PartidoUniTEquipo = data;
-        console.log(this.PartidoUniTEquipo);
-
-        this.tituloPartidoUniListaEquipo = 'Equipo Local';
       },
       (error) => {
-        console.log(error);
+        console.error(error + ' ');
       }
     );
   }
 
+
+  // public consultaDeportesTotales() {
+  //   this.servi.getlListCatologoDeporte('/' + 3).subscribe(
+  //     (data: { equipos: [] }) => {
+  //       this.deportesTotales = data;
+  //     },
+  //     (error) => {
+  //       console.error(error + ' ');
+  //     }
+  //   );
+  // }
+
+  // public SelTipEquipo() {
+  //   this.BuscarEvalor = this.ConsultarPartidoByEquipoU.getRawValue()['CBPartidoEquipo'];
+  //   this.servi.getPartidoTipEquipo(this.BuscarEvalor).subscribe(
+  //     (data: any) => {
+  //       this.PartidoUniTEquipo = data;
+  //       console.log(this.PartidoUniTEquipo);
+
+  //       this.tituloPartidoUniListaEquipo = 'Equipo Local';
+  //     },
+  //     (error) => {
+  //       console.log(error);
+  //     }
+  //   );
+  // }
+
+  // public SelTipDeporte() {
+  //   this.BuscarEvalor = this.ConsultarPartidoByDeporte.getRawValue()['CBPartidoDeporte'];
+  //   this.servi.getPartidoTipEquipo(this.BuscarEvalor).subscribe(
+  //     (data: any) => {
+  //       this.PartidoUniTDeporte = data;
+  //       console.log(this.PartidoUniTDeporte);
+
+  //       this.tituloPartidoUniListaDeporte = 'Deporte';
+  //     },
+  //     (error) => {
+  //       console.log(error);
+  //     }
+  //   );
+  // }
+
+  
+
+
   insertarNuevoPartido() {
-    var datosvalo1 = this.crearPartidoU.getRawValue()['textNueFechaTicket'];
-    var datosvalo2 = this.crearPartidoU.getRawValue()['textNuePuntoVentaTicket']; //JSON armado
-    var datosvalo3 = this.crearPartidoU.getRawValue()['textNueCliente']; //JSON armado
+    var datosvalo1 = this.crearPartidoU.getRawValue()['textNueEquipoLocal'];
+    var datosvalo2 = this.crearPartidoU.getRawValue()['textNueEquipoVisitante'];
+    var datosvalo3 = this.crearPartidoU.getRawValue()['textNueFechaPartido']; 
+    var datosvalo4 = this.crearPartidoU.getRawValue()['textNueDeporte']; 
+   
 
     var cadena = {
-      FechaTicket: datosvalo1,
-      PuntoVentaTicket: datosvalo2,
-      ClienteTicket: datosvalo3,
+      EquipoLocal: datosvalo1,
+      EquipoVisitante: datosvalo2,
+      FechaPartido: datosvalo3,
+      Deporte: datosvalo4,
+       
     };
 
-    this.servi.crearPartidoU(cadena).then((res) => {
-        
+    this.servi.crearPartidoU(cadena)
+      .then((res) => {
         console.log(res);
       })
       .catch((err) => {
@@ -151,11 +200,66 @@ export class PartidoComponent implements OnInit {
     this.crearPartidoU.reset();
   }
 
+  
+
+  public SelPartidoEditar() {
+    this.BuscarEvalor = this.ActPartidoU.getRawValue()['CBPartidoEdi'];
+
+    this.servi.getPartidoSeleccionado(this.BuscarEvalor).subscribe(
+      (data: any) => {
+        this.PartidoCataEdi = data;
+        console.log(this.PartidoCataEdi);
+
+        this.titloPartidoEditar = 'Partido a Editar';
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
+
+  public ActualizarPartido() {
+    //variables para armar el JSON que se va a enviar al Back-End
+    var datosvalo1 = this.ActPartidoU.getRawValue()['CBPartidoEdi'];
+    var datosvalo2 = this.ActPartidoU.getRawValue()['textNueEquipoLocalEdi'];
+    var datosvalo3 = this.ActPartidoU.getRawValue()['textNueEquipoVisitanteEdi'];
+    var datosvalo4 = this.ActPartidoU.getRawValue()['textNueFechaPartidoEdi'];
+    var datosvalo5 = this.ActPartidoU.getRawValue()['textNueDeporteEdi'];
+    
+    var cadena = {
+      id_partidos: datosvalo1,
+
+      EquipoLocal: datosvalo2,
+
+      EquipoVisitante: datosvalo3,
+
+      FechaPartido: datosvalo4,
+
+      Deporte: datosvalo5,
+    };
 
 
+    this.servi.ActualizarPartidoU(cadena).then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
+    this.crearPartidoU.reset();
+  }
 
   ngOnInit(): void {
     this.listarPartidosTotales = this.formBuilder.group({});
+
+    this.ActPartidoU = this.formBuilder.group({
+      CBPartidoEdi: [],
+      textNueEquipoLocalEdi: [],
+      textNueEquipoVisitanteEdi: [],
+      textNueFechaPartidoEdi: [],
+      textNueDeporteEdi: [],
+      textNueGanadorPartidoEdi: [],
+
+    });
   }
 }

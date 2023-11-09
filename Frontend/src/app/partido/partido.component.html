@@ -52,7 +52,7 @@
     </div>
     <br><br>
 
-    <div class="creaTicket">
+    <div class="creaPartido">
 
         <h2>Registrar Partido</h2>
 
@@ -60,45 +60,100 @@
 
             <!-- Los otros controles para la captura de los datos del Catalogo -->
 
-            <span class="spn_lbl">Equipo Local</span>
-            <label>
-                <select class="dropdown2" formControlName="CBPartidoEquipo" (click)="consultaEquiposTotales()">
-                    <option value="value1">Ticket</option>
-                    <option *ngFor="let caese of equiposTotales" [value]="caese.id_equipos">
-                        {{caese.NombreEquipo}}
-                    </option>
-                </select>
-            </label>
-            <br> <br>
-            <button type="submit">Buscar Ticket a Editar</button>
+            <span class="spn_lbl">Equipo local: </span>
+            <label for="textNueEquipoLocal">
 
-
-
-
-
-            <span class="spn_lbl">Punto Venta: </span>
-            <label for="textNuePuntoVentaTicket">
-                 <input type="text" name="TtextNuePuntoVentaTicket" id="TtextNuePuntoVentaTicket"
-                    formControlName="textNuePuntoVentaTicket">
-            </label>
-            <br> <br>
-
-            <span class="spn_lbl">Cliente: </span>
-
-            <label for="textNueCliente">
-
-                <input type="text" name="TtextNueCliente" id="TtextNueCliente" formControlName="textNueCliente">
+                <input type="text" name="TtextNueEquipoLocal" id="TtextNueEquipoLocal"
+                    formControlName="textNueEquipoLocal">
 
             </label>
-
             <br><br>
 
-            <button type="submit">Registrar Ticket</button>
+            <span class="spn_lbl">Equipo Visitante: </span>
+            <label for="textNueEquipoVisitante">
+
+                <input type="text" name="TtextNueEquipoVisitante" id="TtextNueEquipoVisitante"
+                    formControlName="textNueEquipoVisitante">
+
+            </label>
+            <br><br>
+
+            <span class="spn_lbl">Fecha: </span>
+            <label for="textNueFechaPartido">
+
+                <input type="text" name="TtextNueFechaPartido" id="TtextNueFechaPartido"
+                    formControlName="textNueFechaPartido">
+
+            </label>
+            <br><br>
+
+            <span class="spn_lbl">Deporte: </span>
+            <label for="textNueDeporte">
+
+                <input type="text" name="TtextNueDeporte" id="TtextNueDeporte" formControlName="textNueDeporte">
+
+            </label>
+            <br><br>
+
+            <button type="submit">Registrar Partido</button>
 
             <br><br>
         </form>
     </div>
     <br><br>
+
+    <div class="editPartido">
+        <h2>Modificar un Partido</h2>
+        <form (ngSubmit)="SelPartidoEditar()" [formGroup]="ActPartidoU">
+
+            <span class="spn_lbl">Partido a Editar</span>
+            <label>
+                <select class="dropdown2" formControlName="CBPartidoEdi" (click)="consultaPartidosTotales(false)">
+                    <option *ngFor="let caese of PartidoUniT" [value]="caese.id_partidos">
+                        {{caese.id_partidos}}
+                    </option>
+                </select>
+            </label>
+            <br> <br>
+            <button type="submit">Buscar Partido a Editar</button>
+
+            <h2>{{titloPartidoEditar}}</h2>
+            <li *ngFor="let cae of PartidoCataEdi">
+
+                <!-- Los otros controles para la captura de los datos deL cATALOGO -->
+                <span class="spn_lbl">Equipo Local: </span>
+                <label for="CtextNueEquipoLocalEdi"><input type="text" name="CtextNueEquipoLocalEdi"
+                        id="CtextNueEquipoLocalEdi" value={{cae.EquipoLocal}} [(ngModel)]="cae.EquipoLocal"
+                        [value]="cae.EquipoLocal" formControlName="textNueEquipoLocalEdi">
+                </label>
+                <br><br>
+
+                <span class="spn_lbl">Equipo Visitante: </span>
+                <label for="CtextNueEquipoVisitanteEdi"><input type="text" name="CtextNueEquipoVisitanteEdi"
+                        id="CtextNueEquipoVisitanteEdi" value={{cae.EquipoVisitante}} [(ngModel)]="cae.EquipoVisitante"
+                        [value]="cae.EquipoVisitante" formControlName="textNueEquipoVisitanteEdi">
+                </label>
+                <br><br>
+
+                <span class="spn_lbl">Fecha: </span>
+                <label for="CtextNueFechaPartidoEdi"><input type="datetime-local" name="CtextNueFechaPartidoEdi"
+                        id="CtextNueFechaPartidoEdi" value={{cae.FechaPartido}} [(ngModel)]="cae.FechaPartido"
+                        [value]="cae.FechaPartido" formControlName="textNueFechaPartidoEdi">
+                </label>
+                <br><br>
+
+                <span class="spn_lbl">Deporte: </span>
+                <label for="CtextNueDeporteEdi"><input type="text" name="CtextNueDeporteEdi" id="CtextNueDeporteEdi"
+                        value={{cae.Deporte}} [(ngModel)]="cae.Deporte" [value]="cae.Deporte"
+                        formControlName="textNueDeporteEdi">
+                </label>
+                <br><br>
+            </li>
+            <br><br>
+
+            <button (click)="ActualizarPartido()">Actualizar Registro</button>
+
+            <br><br>
+        </form>
+    </div>
 </body>
-    
-       

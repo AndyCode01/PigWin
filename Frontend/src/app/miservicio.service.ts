@@ -146,6 +146,20 @@ export class MiservicioService {
   getPartidoTipEquipo(id: any): Observable<any> {
     return this.http.get(this.Url + '/Ticket/' + id, httpOptions);
   }
+
+  // getlListCatologoDeporte(tipcat: any): Observable<any> {
+  //   return this.http.get(this.Url + '/Universal' + tipcat, httpOptions);
+  // }
+
+  getPartidoSeleccionado(id_ticket: any): Observable<any> {
+    return this.http.get(this.Url + '/Partido/id/' + id_ticket, httpOptions);
+  }
+
+  async ActualizarPartidoU(Dato: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.http.put(this.Url + '/Partido', Dato, httpOptions).toPromise();
+    });
+  }
   
 
 }
