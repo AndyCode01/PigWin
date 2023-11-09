@@ -5,3 +5,4 @@ config.json
 Backend/pnpm-lock.yaml
 Frontend/.angular/
 
+Frontend/package-lock.json
