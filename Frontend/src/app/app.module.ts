@@ -4,7 +4,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 
 // Librería para poder consumir el servicio
-import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -15,6 +14,9 @@ import { CatauniversalComponent } from './catauniversal/catauniversal.component'
 import { TicketComponent } from './ticket/ticket.component';
 import { PuntoventaComponent } from './puntoventa/puntoventa.component';
 import { PartidoComponent } from './partido/partido.component';
+import { ClienteComponent } from './cliente/cliente.component';
+import { NgSelectModule } from '@ng-select/ng-select';
+
 
 
 const appRoutes: Routes = [
@@ -39,18 +41,29 @@ const appRoutes: Routes = [
     path: 'Partido',
     component: PartidoComponent,
   },
+  {
+    path: 'Cliente',
+    component: ClienteComponent,
+  },
 ];
 
 @NgModule({
-  declarations: [AppComponent, CatauniversalComponent, TicketComponent, PuntoventaComponent, PartidoComponent],
+  declarations: [
+    AppComponent,
+    CatauniversalComponent,
+    TicketComponent,
+    PuntoventaComponent,
+    PartidoComponent,
+    ClienteComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpModule,
-    RouterModule.forRoot(appRoutes), 
-    HttpClientModule, 
+    RouterModule.forRoot(appRoutes),
+    HttpClientModule,
+    NgSelectModule,
   ],
   providers: [MiservicioService],
   bootstrap: [AppComponent],

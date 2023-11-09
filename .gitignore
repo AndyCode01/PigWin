@@ -1,9 +1,10 @@
 node_modules
 config.json
-Frontend/.angular/cache/
+
 Frontend/pnpm-lock.yaml
 <<<<<<< HEAD
 Frontend/.angular/
 =======
 Backend/pnpm-lock.yaml
->>>>>>> master
+Frontend/.angular/
+
