@@ -38,7 +38,6 @@ export class CatauniversalComponent implements OnInit {
   CataUniMetodoPago: any = []; //Lista catalogo Tipos de Documntos
   CataUniEps: any = []; //Lista catalogo Eps
   CataUniPrefSexual: any = []; //Lista catalogo Preferencias Sexuales
-  
 
   CataUniCatalogoSel: any = []; //Lista catalogo Catalogo selecionado
   CataUniApartadoSel: any = []; //Lista el color selecionado
@@ -48,7 +47,6 @@ export class CatauniversalComponent implements OnInit {
   CataUniEpsSel: any = []; //Lista catalogo Eps selecionado
   CataUniTipoContacto: any = []; //Lista catalogo Preferencias Sexuales selecionado
   CataUniCataEdi: any = [];
-
 
   tablacatalogosstotales: any = []; //Encabezados tabla catalogos totales
 
@@ -166,6 +164,8 @@ export class CatauniversalComponent implements OnInit {
       (data: {}) => {
         if (catip == 1) {
           this.CataUniCatalogo = data;
+          console.log(this.CataUniCatalogo);
+
         } else if (catip == 2) {
           this.CataUniApartado = data;
           console.log(this.CataUniApartado);
@@ -225,7 +225,6 @@ export class CatauniversalComponent implements OnInit {
           this.CataUniCatalogoSel = data;
         } else if (catip == 2) {
           this.CataUniApartadoSel = data;
-          console.log(this.CataUniApartado);
         } else if (catip == 3) {
           this.CataUniDeporteSel = data;
         } else if (catip == 4) {
@@ -255,13 +254,14 @@ export class CatauniversalComponent implements OnInit {
     var datosvalo3 = this.CrearCatalogoU.getRawValue()['CBTipoCatalogo']; //JSON armado
 
     var cadena = {
-    
       NombreCatalogo: datosvalo2,
 
       TipoCatalogo: datosvalo3,
     }; //se consume el servicio
 
-    this.servi.CrearCatalogoU(cadena).then((res) => {
+    this.servi
+      .CrearCatalogoU(cadena)
+      .then((res) => {
         console.log(res);
       })
       .catch((err) => {
@@ -273,65 +273,62 @@ export class CatauniversalComponent implements OnInit {
 
   // -----------------------------------------------------------------------------------------
 
-  //-------------------------------------------------------------- 
+  //--------------------------------------------------------------
 
-//Consulta un catalogo por Id. 
+  //Consulta un catalogo por Id.
 
-public SelCataEditar(){ 
+  public SelCataEditar() {
+    this.BuscarEvalor = this.ActCatalogoU.getRawValue()['CBCatalogoEdi'];
 
- this.BuscarEvalor  = this.ActCatalogoU.getRawValue()['CBCatalogoEdi']; 
+    this.servi.getlCatEdit(this.BuscarEvalor).subscribe(
+      (data: any) => {
+        this.CataUniCataEdi = data;
 
- this.servi.getlCatEdit(this.BuscarEvalor).subscribe((data: any) =>  { 
- 
- this.CataUniCataEdi = data; 
+        //console.log(" aca 45 " + this.CataUniCataEdi.length + " y la data  " + data.length);
 
-//console.log(" aca 45 " + this.CataUniCataEdi.length + " y la data  " + data.length); 
+        this.titloCataUniEditar = 'CATALOGO A EDITAR';
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
 
- this.titloCataUniEditar = "CATALOGO A EDITAR"; 
+  // -----------------------------------------------------------------------------------------
 
-}, 
-error => { console.log(error) }); 
+  // método para actualizar un catalogo .
 
-} 
+  public ActualizarCatalogo() {
+    //variables para armar el JSON que se va a enviar al Back-End
+    var datosvalo1 = this.ActCatalogoU.getRawValue()['CBCatalogoEdi'];
 
+    var datosvalo2 = this.ActCatalogoU.getRawValue()['textNueDenominacionEdi'];
 
-// ----------------------------------------------------------------------------------------- 
+    var datosvalo3 = this.ActCatalogoU.getRawValue()['CBTipoCatalogoEdi'];
 
-// método para actualizar un catalogo . 
+    //JSON armado
 
- 
+    var cadena = {
+      id_catalogo_universal: datosvalo1,
 
-public ActualizarCatalogo()  { 
- //variables para armar el JSON que se va a enviar al Back-End 
-var datosvalo1 = this.ActCatalogoU.getRawValue()['CBCatalogoEdi']; 
+      NombreCatalogo: datosvalo2,
 
-var datosvalo2 = this.ActCatalogoU.getRawValue()['textNueDenominacionEdi'];  
+      TipoCatalogo: datosvalo3,
+    };
 
-var datosvalo3 = this.ActCatalogoU.getRawValue()['CBTipoCatalogoEdi']; 
+    //se consume el servicio
 
- 
+    this.servi
+      .ActualizarCatalogoU(cadena)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
-//JSON armado 
-
-var cadena = {"id_catalogo_universal":datosvalo1, 
-
- "NombreCatalogo":datosvalo2, 
-
- "TipoCatalogo":datosvalo3
-
-}; 
-
-//se consume el servicio 
-
-this.servi.ActualizarCatalogoU(cadena).then(res => { 
-  console.log(res) 
- }).catch(err =>{ 
- console.log(err) 
-}) 
-
-  this.CrearCatalogoU.reset(); 
-
-} 
+    this.CrearCatalogoU.reset();
+  }
 
   //=============================================================
   //LAS FUNCIONES PARA LLAMARLAS DESDE EL HTML
@@ -381,7 +378,7 @@ this.servi.ActualizarCatalogoU(cadena).then(res => {
       CBCatalogoEdi: [],
       CBTipoCatalogoEdi: [],
       textNueDenominacionEdi: [],
-      textNueTipoCatEdi: []
+      textNueTipoCatEdi: [],
     });
   }
 }
