@@ -1,0 +1,68 @@
+
+<body>
+  <div class="listaU">
+    <h1>Todos los clientes</h1>
+    <button (click)="mostrarTabla()">Mostrar Clientes</button>
+    <button (click)="limpiarLista()">Limpiar</button>
+      <table *ngIf="showTable">
+        <thead>
+          <th *ngFor="let key of keysCliente">{{key}}</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of Clientes ">
+            <th *ngFor="let key of keysCliente">{{cliente[key]}}</th>
+          </tr>
+        </tbody>
+      </table>
+  </div>
+  <br>
+
+  <div class="listaU">
+    <h1>Busqueda Cliente</h1>
+    <form action="" [formGroup]="FormBusquedaCliente">
+      <select formControlName="TipoBusquedaCliente" (change)="filtros()">
+      <option value="id_clientes">id</option>
+      <option value="Tipo Documento">Tipo de Documento</option>
+      </select>
+      <select formControlName="ValorBusquedaCliente">
+      <option *ngFor="let opcion of valuefilters" value="{{opcion}}">{{opcion}}</option>
+      </select>
+    </form>
+    <button (click)="BuscarCliente()">Busqueda Cliente</button>
+    <table *ngIf="clientesFiltrados.length >=1">
+        <thead>
+          <th *ngFor="let key of keysCliente">{{key}}</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of clientesFiltrados ">
+            <th *ngFor="let key of keysCliente">{{cliente[key]}}</th>
+          </tr>
+        </tbody>
+      </table>
+  </div>
+  <br>
+  <div class="listaU">
+    <h1>Registro Cliente</h1>
+    <form action="" [formGroup]="FormCrearCliente">
+      <div style="display: flex; flex-wrap: wrap;">
+        <div style="margin: 10px;" *ngFor="let atributo of ['Primer Nombre','Segundo Nombre','Primer Apellido','Segundo Apellido', 'NumeroDocumento']">
+        <label for="{{atributo}}">{{atributo}}</label>
+        <input type="text" formControlName="{{atributo}}">
+        </div>
+        <div style="margin: 10px;" *ngFor="let atributo of ['Tipo Documento','Sexo','Metodo De Pago']">
+          <label for="{{atributo}}">{{atributo}}</label>
+          <select formControlName="{{atributo}}">
+            <option *ngFor="let valor of listaValoresAtributo(atributo)" value="{{valor}}">{{valor}}</option>
+          </select>
+        </div>
+      </div>
+    </form>
+    <button (click)="registrarCliente()">Crear Cliente</button>
+  </div>
+  <br>
+  <div>
+  </div>
+  <div>
+
+  </div>
+</body>

@@ -15,6 +15,7 @@ import { CatauniversalComponent } from './catauniversal/catauniversal.component'
 import { TicketComponent } from './ticket/ticket.component';
 import { PuntoventaComponent } from './puntoventa/puntoventa.component';
 import { PartidoComponent } from './partido/partido.component';
+import { ClienteComponent } from './cliente/cliente.component';
 
 
 const appRoutes: Routes = [
@@ -39,18 +40,22 @@ const appRoutes: Routes = [
     path: 'Partido',
     component: PartidoComponent,
   },
+  {
+    path: 'Cliente',
+    component: ClienteComponent,
+  },
 ];
 
 @NgModule({
-  declarations: [AppComponent, CatauniversalComponent, TicketComponent, PuntoventaComponent, PartidoComponent],
+  declarations: [AppComponent, CatauniversalComponent, TicketComponent, PuntoventaComponent, PartidoComponent, ClienteComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
     HttpModule,
-    RouterModule.forRoot(appRoutes), 
-    HttpClientModule, 
+    RouterModule.forRoot(appRoutes),
+    HttpClientModule,
   ],
   providers: [MiservicioService],
   bootstrap: [AppComponent],
