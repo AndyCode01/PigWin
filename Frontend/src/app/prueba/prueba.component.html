@@ -1,0 +1,25 @@
+
+<form class="form" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+  <div class="field">
+    <label class="label">Apuesta</label>
+    <input type="text" class="input" formControlName="apuesta" [class.invalid]="registerForm.get('apuesta')?.invalid && (registerForm.get('apuesta')?.dirty || registerForm.get('apuesta')?.touched || isSubmitted)">
+    <span *ngIf="registerForm.get('apuesta')?.hasError('required') && (registerForm.get('apuesta')?.dirty || registerForm.get('apuesta')?.touched || isSubmitted)" class="error">This field is required</span>
+  </div>
+
+  <div class="field">
+    <label class="label">Equipo</label>
+    <input type="text" class="input" formControlName="equipo" [class.invalid]="registerForm.get('equipo')?.invalid && (registerForm.get('equipo')?.dirty || registerForm.get('equipo')?.touched || isSubmitted)">
+    <span *ngIf="registerForm.get('apuesta')?.hasError('required') && (registerForm.get('apuesta')?.dirty || registerForm.get('apuesta')?.touched || isSubmitted)" class="error">This field is required</span>
+  </div>
+  <div class="field">
+    <label class="label">Comentario</label>
+    <input type="text" class="input" formControlName="comentario" [class.invalid]="registerForm.get('comentario')?.invalid && (registerForm.get('comentario')?.dirty || registerForm.get('comentario')?.touched || isSubmitted)">
+    <span *ngIf="registerForm.get('apuesta')?.hasError('required') && (registerForm.get('apuesta')?.dirty || registerForm.get('apuesta')?.touched || isSubmitted)" class="error">This field is required</span>
+  </div>
+  <select formControlName="roleid">
+    <option *ngFor="let role of roles" [ngValue]="role.id">{{role.tittle}}</option>
+  </select>
+  <div>
+    <button type="submit" class="button">Registrar</button>
+  </div>
+</form>
