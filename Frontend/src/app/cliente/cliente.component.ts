@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MiservicioService } from '../miservicio.service';
 import { map } from 'rxjs/operators';
@@ -16,51 +16,135 @@ export class ClienteComponent implements OnInit {
     Router: Router
   ) {}
 
+  public valoresByTipoCatalogo(id_tipo_catalogo: number) {
+    return this.servi
+      .getTipoCatalogo(id_tipo_catalogo)
+      .pipe(map((data) => data));
+  }
+
   //Objeto donde se guarda la info del cliente
   Clientes: Array<any> = [];
-  clientesFiltrados: Array<any> = [];
   keysCliente: Array<any> = [];
+  clientesFiltrados: Array<any> = [];
 
   showTable: boolean = false;
-  filters: Array<string> = [];
-  valuefilters: Array<string> = [];
-
   showInputModificar: boolean = false;
 
-  FormBusquedaCliente = new FormGroup({
-    TipoBusquedaCliente: new FormControl(),
-    ValorBusquedaCliente: new FormControl(),
+  isSubmitted = {
+    CrearCliente: false,
+    BusquedaCliente: false,
+    ModificarCliente: false,
+  };
+
+  Catalogos: any = {
+    TipoDocumento: [],
+    Sexo: [],
+    MetodoDePago: [],
+  };
+
+  inputFormCliente: any = [
+    { label: 'Primer Nombre', controlName: 'PrimerNombre' },
+    { label: 'Segundo Nombre', controlName: 'SegundoNombre' },
+    { label: 'Primer Apellido', controlName: 'PrimerApellido' },
+    { label: 'Segundo Apellido', controlName: 'SegundoApellido' },
+    { label: 'Número de documento', controlName: 'NumeroDocumento' },
+  ];
+
+  selectFormCliente: any = [
+    { label: 'Tipo de documento', controlName: 'TipoDocumento' },
+    { label: 'Sexo', controlName: 'Sexo' },
+    { label: 'Metodo de pago', controlName: 'MetodoDePago' },
+  ];
+
+  selectFormBusquedaCliente: any = [
+    { label: 'Nombre', value: 'nombre' },
+    { label: 'id', value: 'id_clientes' },
+    { label: 'Tipo de documento', value: 'id_tipo_documento' },
+  ];
+
+  valoresBusqueda: any = [];
+
+  FormBusquedaCliente = this.formBuilder.group({
+    TipoBusquedaCliente: ['', Validators.required],
+    ValorBusquedaCliente: [1, Validators.required],
   });
 
-  FormCrearCliente = new FormGroup({
-    'Primer Nombre': new FormControl(),
-    'Segundo Nombre': new FormControl(),
-    'Primer Apellido': new FormControl(),
-    'Segundo Apellido': new FormControl(),
-    'Tipo Documento': new FormControl(),
-    Sexo: new FormControl(),
-    'Metodo De Pago': new FormControl(),
-    'Numero Documento': new FormControl(),
+  FormCrearCliente = this.formBuilder.group({
+    PrimerNombre: ['', Validators.required],
+    SegundoNombre: '',
+    PrimerApellido: ['', Validators.required],
+    SegundoApellido: '',
+    TipoDocumento: [0, Validators.required],
+    Sexo: [0, Validators.required],
+    MetodoDePago: [0, Validators.required],
+    NumeroDocumento: ['', Validators.required],
   });
 
-  FormModificarCliente = new FormGroup({
-    TipoBusquedaCliente: new FormControl(),
-    ValorBusquedaCliente: new FormControl(),
-    'Primer Nombre': new FormControl(),
-    'Segundo Nombre': new FormControl(),
-    'Primer Apellido': new FormControl(),
-    'Segundo Apellido': new FormControl(),
-    'Tipo Documento': new FormControl(),
-    Sexo: new FormControl(),
-    'Metodo De Pago': new FormControl(),
-    'Numero Documento': new FormControl(),
+  setCrearClienteSelectValue() {
+    let CrearCliente = {
+      TipoDocumento: this.Catalogos?.TipoDocumento[0]?.id_catalogo_universal,
+      Sexo: this.Catalogos?.Sexo[0]?.id_catalogo_universal,
+      MetodoDePago: this.Catalogos?.MetodoDePago[0]?.id_catalogo_universal,
+    };
+    this.FormCrearCliente.patchValue(CrearCliente);
+  }
+
+  FormModificarCliente = this.formBuilder.group({
+    id_clientes: '',
+    PrimerNombre: ['', Validators.required],
+    SegundoNombre: '',
+    PrimerApellido: ['', Validators.required],
+    SegundoApellido: '',
+    TipoDocumento: [0, Validators.required],
+    Sexo: [0, Validators.required],
+    MetodoDePago: [0, Validators.required],
+    NumeroDocumento: ['', Validators.required],
   });
+
+  setModificarClienteSelectValue() {
+    let tipoDocumento;
+    let sexo;
+    let metodoPago;
+    for (let index = 0; index < this.Catalogos?.TipoDocumento.length; index++) {
+      if (
+        this.clientesFiltrados[0]['Tipo Documento'] ==
+        this.Catalogos?.TipoDocumento[index].NombreCatalogo
+      )
+        tipoDocumento =
+          this.Catalogos?.TipoDocumento[index].id_catalogo_universal;
+    }
+    for (let index = 0; index < this.Catalogos?.Sexo.length; index++) {
+      if (
+        this.clientesFiltrados[0]['Sexo'] ==
+        this.Catalogos?.Sexo[index].NombreCatalogo
+      )
+        sexo = this.Catalogos?.Sexo[index].id_catalogo_universal;
+    }
+    for (let index = 0; index < this.Catalogos?.MetodoDePago.length; index++) {
+      if (
+        this.clientesFiltrados[0]['Metodo De Pago'] ==
+        this.Catalogos?.MetodoDePago[index].NombreCatalogo
+      )
+        metodoPago = this.Catalogos?.MetodoDePago[index].id_catalogo_universal;
+    }
+    let ModificarCliente = {
+      id_clientes: this.clientesFiltrados[0].id_clientes,
+      PrimerNombre: this.clientesFiltrados[0]['Primer Nombre'],
+      SegundoNombre: this.clientesFiltrados[0]['Segundo Nombre'],
+      PrimerApellido: this.clientesFiltrados[0]['Primer Apellido'],
+      SegundoApellido: this.clientesFiltrados[0]['Segundo Apellido'],
+      TipoDocumento: tipoDocumento,
+      Sexo: sexo,
+      MetodoDePago: metodoPago,
+      NumeroDocumento: this.clientesFiltrados[0]['Numero Documento'],
+    };
+    this.FormModificarCliente.patchValue(ModificarCliente);
+  }
 
   public consultaClientesTotales() {
     this.servi.getClientesTotales().subscribe((data) => {
       this.Clientes = data;
       this.keysCliente = Object.keys(this.Clientes[0]);
-      this.filtros(this.FormBusquedaCliente);
     });
   }
 
@@ -73,159 +157,132 @@ export class ClienteComponent implements OnInit {
       this.showTable = false;
   }
 
-  public filtros(Form: FormGroup) {
-    const tipoBusqueda = Form.getRawValue()['TipoBusquedaCliente'];
-    this.valuefilters = this.listaValoresAtributo(tipoBusqueda);
-  }
-
-  public listaValoresAtributo(tipoBusqueda: string) {
-    let valores: Array<string> = [];
-    let flag: boolean = true;
-    for (let index = 0; index < this.Clientes.length; index++) {
-      valores.filter((valor) => {
-        if (valor == this.Clientes[index][tipoBusqueda]) flag = false;
-      });
-      if (flag == true) valores.push(this.Clientes[index][tipoBusqueda]);
-      flag = true;
-    }
-    return valores;
-  }
-
-  public valoresByTipoCatalogo(id_tipo_catalogo: number) {
-    return this.servi.getTipoCatalogo(id_tipo_catalogo).pipe(map((data) => data));
-  }
-
-  public async buscarValorCatalogo(atributo: string, valor: string) {
-    let id_tipo_catalogo: number = 0;
-    let catalogo: any;
-
-    switch (atributo) {
-      case 'Tipo Documento':
-        catalogo = await this.valoresByTipoCatalogo(4).toPromise();
-        break;
-      case 'Sexo':
-        catalogo = await this.valoresByTipoCatalogo(6).toPromise();
-        break;
-      case 'Metodo De Pago':
-        catalogo = await this.valoresByTipoCatalogo(5).toPromise();
-        break;
-    }
-
-    for (let index = 0; index < catalogo?.length; index++) {
-      if (valor == catalogo[index].NombreCatalogo) {
-        id_tipo_catalogo = catalogo[index].id_catalogo_universal;
-      }
-    }
-    return id_tipo_catalogo;
-  }
-
-  public async BuscarCliente(Form: FormGroup) {
-    const valores = {
-      tipoBusqueda: Form.getRawValue()['TipoBusquedaCliente'],
-      valorFiltro: Form.getRawValue()['ValorBusquedaCliente'],
+  public async getCatalogos() {
+    this.Catalogos = {
+      TipoDocumento: await this.valoresByTipoCatalogo(4).toPromise(),
+      Sexo: await this.valoresByTipoCatalogo(6).toPromise(),
+      MetodoDePago: await this.valoresByTipoCatalogo(5).toPromise(),
     };
-
-    if (Number.isNaN(Number.parseInt(valores?.valorFiltro))) {
-      let id_tipo_documento = await this.buscarValorCatalogo(
-        valores?.tipoBusqueda,
-        valores?.valorFiltro
-      );
-      this.servi
-        .getClienteByTipoDocumento(id_tipo_documento)
-        .subscribe((data) => {
-          this.clientesFiltrados = data;
-        });
-    } else {
-      this.servi.getClienteByID(valores?.valorFiltro).subscribe((data) => {
-        this.clientesFiltrados = data;
-      });
-    }
   }
 
-  public async registrarCliente() {
-    let newCliente: any = {};
-    const values = this.FormCrearCliente.getRawValue();
-    for (const key in values) {
-      if (key == 'Tipo Documento' || key == 'Sexo' || key == 'Metodo De Pago') {
-        newCliente[key.replace(/ /g, '')] = await this.buscarValorCatalogo(
-          key,
-          values[key]
-        );
-      } else {
-        newCliente[key.replace(/ /g, '')] = values[key];
-      }
+  public getValoresBusqueda(tipoBusqueda: string) {
+    switch (tipoBusqueda) {
+      case 'id_tipo_documento':
+        for (
+          let index = 0;
+          index < this.Catalogos.TipoDocumento.length;
+          index++
+        ) {
+          this.valoresBusqueda.push({
+            value: this.Catalogos.TipoDocumento[index].id_catalogo_universal,
+            label: this.Catalogos.TipoDocumento[index].NombreCatalogo,
+          });
+        }
+        break;
+      case 'nombre':
+        for (let index = 0; index < this.Clientes.length; index++) {
+          this.valoresBusqueda.push({
+            value: this.Clientes[index].id_clientes,
+            label:
+              this.Clientes[index]['Primer Nombre'] +
+              ' ' +
+              this.Clientes[index]['Segundo Nombre'] +
+              ' ' +
+              this.Clientes[index]['Primer Apellido'],
+          });
+        }
+        break;
+      case 'id_clientes':
+        for (let index = 0; index < this.Clientes.length; index++) {
+          this.valoresBusqueda.push({
+            value: this.Clientes[index].id_clientes,
+            label: this.Clientes[index].id_clientes,
+          });
+        }
+        break;
     }
-
-    try {
-      const res = await this.servi.CrearCliente(newCliente);
-      console.log(newCliente);
-      this.FormCrearCliente.reset();
-      this.consultaClientesTotales();
-      console.log(res);
-    } catch (error) {
-      console.log(error);
-    }
+    let valor = {
+      ValorBusquedaCliente: this.valoresBusqueda[0].value,
+    };
+    this.FormBusquedaCliente.patchValue(valor);
   }
 
-  public async modificarCliente() {
-    let updateCliente: any = {};
-    const values = this.clientesFiltrados[0]
-    for (const key in values) {
-      if (key == 'Tipo Documento' || key == 'Sexo' || key == 'Metodo De Pago') {
-        updateCliente[key.replace(/ /g, '')] = await this.buscarValorCatalogo(
-          key,
-          values[key]
-        );
-      } else {
-        updateCliente[key.replace(/ /g, '')] = values[key];
-
-      }
-    }
-    try {
-      const res = await this.servi.ModificarCliente(updateCliente);
-      console.log(updateCliente);
-      this.consultaClientesTotales();
-      this.InputModificar();
-      console.log(res);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  public InputModificar() {
-    if (this.showInputModificar == true) this.showInputModificar = false;
-    else {
-      this.showInputModificar = true;
-    }
-  }
-
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.consultaClientesTotales();
-    this.FormBusquedaCliente = this.formBuilder.group({
-      TipoBusquedaCliente: [],
-      ValorBusquedaCliente: '',
-    });
-    this.FormCrearCliente = this.formBuilder.group({
-      'Primer Nombre': '',
-      'Segundo Nombre': '',
-      'Primer Apellido': '',
-      'Segundo Apellido': '',
-      'Tipo Documento': '',
-      Sexo: '',
-      'Metodo De Pago': '',
-      NumeroDocumento: '',
-    });
-    this.FormModificarCliente = this.formBuilder.group({
-      TipoBusquedaCliente: [],
-      ValorBusquedaCliente: '',
-      'Primer Nombre': '',
-      'Segundo Nombre': '',
-      'Primer Apellido': '',
-      'Segundo Apellido': '',
-      'Tipo Documento': '',
-      Sexo: '',
-      'Metodo De Pago': '',
-      'Numero Documento': '',
-    });
+    await this.getCatalogos();
+    this.setCrearClienteSelectValue();
+    this.FormBusquedaCliente.get('TipoBusquedaCliente')?.valueChanges.subscribe(
+      (tipo) => {
+        this.valoresBusqueda = [];
+        this.getValoresBusqueda(tipo);
+      }
+    );
+    let valor = {
+      TipoBusquedaCliente: 'nombre',
+    };
+    this.FormBusquedaCliente.patchValue(valor);
+  }
+
+  async onSubmitCrearCliente(): Promise<void> {
+    if (!this.FormCrearCliente.invalid) {
+      const newCliente = this.FormCrearCliente.value;
+      try {
+        const res = await this.servi.CrearCliente(newCliente);
+        console.log(newCliente);
+        this.FormCrearCliente.reset();
+        this.setCrearClienteSelectValue();
+        this.consultaClientesTotales();
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      this.isSubmitted.CrearCliente = true;
+    }
+  }
+
+  async onSubmitBuscarCliente(): Promise<void> {
+    const valoresBusqueda = this.FormBusquedaCliente.value;
+    try {
+      switch (valoresBusqueda.TipoBusquedaCliente) {
+        case 'id_tipo_documento':
+          this.servi
+            .getClienteByTipoDocumento(valoresBusqueda.ValorBusquedaCliente)
+            .subscribe((data) => {
+              this.clientesFiltrados = data;
+              this.setModificarClienteSelectValue();
+            });
+          break;
+
+        default:
+          this.servi
+            .getClienteByID(valoresBusqueda.ValorBusquedaCliente)
+            .subscribe((data) => {
+              this.clientesFiltrados = data;
+              this.setModificarClienteSelectValue();
+            });
+          break;
+      }
+    } catch (error) {}
+  }
+
+  async onSubmitModificarCliente(): Promise<any> {
+    if (!this.FormModificarCliente.invalid) {
+      const updateCliente = this.FormModificarCliente.value;
+      try {
+        console.log(updateCliente);
+        const res = await this.servi.ModificarCliente(updateCliente);
+        this.consultaClientesTotales();
+        this.FormModificarCliente.reset;
+        this.clientesFiltrados=[]
+        this.FormBusquedaCliente.get('TipoBusquedaCliente')?.setValue(
+          'id_clientes'
+        );
+        this.FormBusquedaCliente.get('ValorBusquedaCliente')?.setValue(updateCliente.id_clientes);
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
+    }
   }
 }

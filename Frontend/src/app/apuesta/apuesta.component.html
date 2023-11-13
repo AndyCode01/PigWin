@@ -1,4 +1,3 @@
-
 <body>
   <div class="listaU">
     <h1>Todos las apuestas</h1>
@@ -6,11 +5,11 @@
     <button (click)="limpiarLista()">Limpiar</button>
       <table *ngIf="showTable">
         <thead>
-          <th *ngFor="let key of keysApuesta">{{key}}</th>
+          <th *ngFor="let key of keysApuestas">{{key}}</th>
         </thead>
         <tbody>
           <tr *ngFor="let cliente of Apuestas ">
-            <th *ngFor="let key of keysApuesta">{{cliente[key]}}</th>
+            <th *ngFor="let key of keysApuestas">{{cliente[key]}}</th>
           </tr>
         </tbody>
       </table>
@@ -18,95 +17,88 @@
   <br>
   <div class="listaU">
     <h1>Registro Apuesta</h1>
-    <form action="" [formGroup]="FormCrearApuesta">
+    <form [formGroup]="FormCrearApuesta" (ngSubmit)="onSubmitCrearCliente()">
       <div style="display: flex; flex-wrap: wrap;">
+        <div style="margin: 10px;" *ngFor="let input of inputFormCliente">
+        <label for="{{input.controlName}}">{{input.label}}</label>
+        <input type="text" formControlName="{{input.controlName}}" [class.invalid]="FormCrearApuesta.get(input.controlName)?.invalid && (FormCrearApuesta.get(input.controlName)?.dirty || FormCrearApuesta.get(input.controlName)?.touched || isSubmitted.CrearApuesta)">
+        <span *ngIf="FormCrearApuesta.get(input.controlName)?.hasError('required') && (FormCrearApuesta.get(input.controlName)?.dirty || FormCrearApuesta.get(input.controlName)?.touched || isSubmitted.CrearApuesta)" >This field is required</span>
+        </div>
+        <div style="margin: 10px;">
+          <label for="TicketApuesta">Ticket</label>
+          <select formControlName="TicketApuesta">
+            <option *ngFor="let tickets of Catalogos.TicketApuesta" [ngValue]="tickets.id_tickets">{{tickets.cliente}}</option>
+          </select>
+        </div>
         <div style="margin: 10px;">
           <label for="PartidoApuesta">Partido</label>
-          <select formControlName="PartidoApuesta" (change)="getEquipoByParido(FormCrearApuesta)">
-            <option *ngFor="let partido of Partidos" value="{{partido.id_partidos}}">{{partido.Equipo_Local}} vs {{partido.Equipo_Visitante}}</option>
+          <select formControlName="PartidoApuesta">
+            <option *ngFor="let partido of Catalogos.PartidoApuesta" [ngValue]="partido.id_partidos">{{partido.Equipo_Local}} vs {{partido.Equipo_Visitante}}</option>
           </select>
         </div>
         <div style="margin: 10px;">
-          <label for="TicketApuesta">Cliente</label>
-          <select formControlName="TicketApuesta">
-            <option *ngFor="let ticket of Tickets" value="{{ticket.id_tickets}}">{{ticket.cliente}}</option>
-          </select>
-        </div>
-        <div style="margin: 10px;">
-          <label for="EquipoApuesta">Equipo de la apuesta</label>
+          <label for="EquipoApuesta">Equipo</label>
           <select formControlName="EquipoApuesta">
-            <option *ngFor="let equipo of equiposByPartido" value="{{equipo}}">{{equipo}}</option>
+            <option *ngFor="let equipo of Catalogos.EquipoApuestaRegistro" [ngValue]="equipo.id_equipos">{{equipo.NombreEquipo}}</option>
           </select>
-        </div>
-        <div style="margin: 10px;" *ngFor="let atributo of ['Monto Apuesta']">
-        <label for="{{atributo}}">{{atributo}}</label>
-        <input type="number" min="10000" step="5000" formControlName="{{atributo}}">
         </div>
       </div>
+      <button type="submit" class="button">Crear Apuesta</button>
     </form>
-    <button (click)="registrarApuesta()">Crear Cliente</button>
   </div>
   <br>
   <div class="listaU">
     <h1>Busqueda Apuesta</h1>
-    <form action="" [formGroup]="FormBusquedaApuesta">
-      <select formControlName="TipoBusquedaCliente" (change)="filtros(FormBusquedaApuesta)">
-      <option value="id_apuestas">id</option>
-      <option value="Cliente">Cliente</option>
+    <form [formGroup]="FormBusquedaCliente" (ngSubmit)="onSubmitBuscarCliente()">
+      <select formControlName="TipoBusquedaCliente">
+        <option *ngFor="let tipoBusqueda of selectFormBusquedaCliente" [ngValue]="tipoBusqueda.value">{{tipoBusqueda.label}}</option>
       </select>
-      <select *ngIf="!switchInputBusqueda" formControlName="ValorBusquedaCliente">
-      <option *ngFor="let opcion of valuefilters" value="{{opcion}}">{{opcion}}</option>
+      <select formControlName="ValorBusquedaCliente">
+        <option *ngFor="let valor of valoresBusqueda" [ngValue]="valor.value">{{valor.label}}</option>
       </select>
-      <select *ngIf="switchInputBusqueda" formControlName="ValorBusquedaCliente">
-        <option *ngFor="let valor of Clientes" value="{{valor.id_clientes}}">{{valor['Primer Nombre']}} {{valor['Segundo Nombre']}} {{valor['Primer Apellido']}}</option>
-      </select>
+      <button type="submit">Buscar Apuesta</button>
     </form>
-    <button (click)="BuscarApuesta(FormBusquedaApuesta)">Busqueda Apuesta</button>
-    <h3 *ngIf="error">No se encuentran apuestas registradas a este cliente</h3>
-    <table *ngIf="apuestasFiltradas.length >=1 && !error">
+    <table *ngIf="apuestasFiltradas.length >=1">
         <thead>
-          <th *ngFor="let key of keysApuesta">{{key}}</th>
+          <th *ngFor="let key of keysApuestas">{{key}}</th>
         </thead>
         <tbody>
           <tr *ngFor="let cliente of apuestasFiltradas ">
-            <th *ngFor="let key of keysApuesta">{{cliente[key]}}</th>
+            <th *ngFor="let key of keysApuestas">{{cliente[key]}}</th>
           </tr>
         </tbody>
-      </table>
+    </table>
+      <br>
     <h1>Modificar Apuesta</h1>
-    <button (click)="InputModificar()" *ngIf="apuestasFiltradas.length >=1 && !showInputModificar">Deseo modificar el cliente</button>
-    <h3 *ngIf="apuestasFiltradas.length <1">Para poder modificar un cliente antes debes buscar cual quieres modificar</h3>
-    <h3 *ngIf="apuestasFiltradas.length >1 && showInputModificar">Solo puedes modificar un cliente a la vez, usa la busqueda por id e intenta nuevamente</h3>
-    <form action="" [formGroup]="FormModificarApuesta">
-      <div *ngIf="showInputModificar && apuestasFiltradas.length ==1">
-        <div style="display: flex; flex-wrap: wrap;" *ngFor="let apuesta of apuestaModificable">
-          <div style="margin: 10px;">
-          <label for="PartidoApuesta">Partido</label>
-          <select formControlName="PartidoApuesta" (change)="getEquipoByParido(FormModificarApuesta)" [(ngModel)]="apuesta['Partido Apuesta']" >
-            <option *ngFor="let partido of Partidos" value="{{partido.id_partidos}}">{{partido.Equipo_Local}} vs {{partido.Equipo_Visitante}}</option>
-          </select>
-          </div>
-          <div style="margin: 10px;">
-            <label for="TicketApuesta">Cliente</label>
-            <select formControlName="TicketApuesta" [(ngModel)]="apuesta.Cliente">
-              <option *ngFor="let ticket of Tickets" value="{{ticket.id_tickets}}">{{ticket.cliente}}</option>
-            </select>
-          </div>
-          <div style="margin: 10px;">
-            <label for="EquipoApuesta">Equipo de la apuesta</label>
-            <select formControlName="EquipoApuesta" [(ngModel)]="apuesta.EquipoApuesta">
-              <option *ngFor="let equipo of equiposByPartido" value="{{equipo}}">{{equipo}}</option>
-            </select>
-          </div>
-          <div style="margin: 10px;" *ngFor="let atributo of ['Monto Apuesta']">
-          <label for="{{atributo}}">{{atributo}}</label>
-          <input type="number" min="10000" step="5000" [(ngModel)]="apuesta[atributo]" formControlName="{{atributo}}">
-          </div>
+    <h3 *ngIf="apuestasFiltradas.length==0">Para modificar un cliente, antes debes buscarlo por id</h3>
+    <h3 *ngIf="apuestasFiltradas.length>1">Solo puedes modificar un cliente, haz una busqueda mas especifica, usa el filtro por id</h3>
+    <form *ngIf="apuestasFiltradas.length==1" [formGroup]="FormModificarApuesta" (ngSubmit)="onSubmitModificarCliente()">
+      <div style="display: flex; flex-wrap: wrap;">
+        <div style="margin: 10px;" *ngFor="let input of inputFormCliente">
+        <label for="{{input.controlName}}">{{input.label}}</label>
+        <input type="text" formControlName="{{input.controlName}}" [class.invalid]="FormCrearApuesta.get(input.controlName)?.invalid && (FormCrearApuesta.get(input.controlName)?.dirty || FormCrearApuesta.get(input.controlName)?.touched || isSubmitted.CrearApuesta)">
+        <span *ngIf="FormCrearApuesta.get(input.controlName)?.hasError('required') && (FormCrearApuesta.get(input.controlName)?.dirty || FormCrearApuesta.get(input.controlName)?.touched || isSubmitted.CrearApuesta)" >This field is required</span>
         </div>
-        <br>
-        <button (click)="modificarApuesta()">Modificar Cliente</button>
+        <div style="margin: 10px;">
+          <label for="TicketApuesta">Ticket</label>
+          <select formControlName="TicketApuesta">
+            <option *ngFor="let tickets of Catalogos.TicketApuesta" [ngValue]="tickets.id_tickets">{{tickets.cliente}}</option>
+          </select>
+        </div>
+        <div style="margin: 10px;">
+          <label for="PartidoApuesta">Partido</label>
+          <select formControlName="PartidoApuesta">
+            <option *ngFor="let partido of Catalogos.PartidoApuesta" [ngValue]="partido.id_partidos">{{partido.Equipo_Local}} vs {{partido.Equipo_Visitante}}</option>
+          </select>
+        </div>
+        <div style="margin: 10px;">
+          <label for="EquipoApuesta">Equipo</label>
+          <select formControlName="EquipoApuesta">
+            <option *ngFor="let equipo of Catalogos.EquipoApuestaModificar" [ngValue]="equipo.id_equipos">{{equipo.NombreEquipo}}</option>
+          </select>
+        </div>
       </div>
+      <button type="submit" class="button">Modificar Apuesta</button>
     </form>
   </div>
 </body>
-

@@ -18,6 +18,7 @@ import { ClienteComponent } from './cliente/cliente.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { EquipoComponent } from './equipo/equipo.component';
 import { ApuestaComponent } from './apuesta/apuesta.component';
+import { PruebaComponent } from './prueba/prueba.component';
 
 
 
@@ -55,7 +56,11 @@ const appRoutes: Routes = [
   {
     path: 'Apuesta',
     component: ApuestaComponent,
-  }
+  },
+  {
+    path: 'Prueba',
+    component: PruebaComponent,
+  },
 ];
 
 @NgModule({
@@ -68,6 +73,7 @@ const appRoutes: Routes = [
     ClienteComponent,
     EquipoComponent,
     ApuestaComponent,
+    PruebaComponent,
   ],
   imports: [
     BrowserModule,

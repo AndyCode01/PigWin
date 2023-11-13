@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MiservicioService } from '../miservicio.service';
 import { map } from 'rxjs/operators';
@@ -16,71 +16,201 @@ export class ApuestaComponent implements OnInit {
     Router: Router
   ) {}
 
+  public valoresByTicket() {
+    return this.servi.getTicketTotal().pipe(map((data) => data));
+  }
+
+  public valoresByPartido() {
+    return this.servi.getPartidoTotal().pipe(map((data) => data));
+  }
+
+  public valoresByEquipo() {
+    return this.servi.getDeportesTotales().pipe(map((data) => data));
+  }
+
+  public valoresByCliente() {
+    return this.servi.getClientesTotales().pipe(map((data) => data));
+  }
+
   //Objeto donde se guarda la info del cliente
   Apuestas: Array<any> = [];
+  keysApuestas: Array<any> = [];
   apuestasFiltradas: Array<any> = [];
-  apuestaModificable: Array<any>=[];
-  keysApuesta: Array<any> = [];
-  newApuesta: any = [];
-
-  Clientes: Array<any> = [];
-  Partidos: Array<any> = [];
-  Tickets: Array<any> = [];
-
-  equiposByPartido: Array<any> = [];
-
-  error: boolean = false;
 
   showTable: boolean = false;
-  filters: Array<string> = [];
-  valuefilters: Array<string> = [];
-
-  switchInputBusqueda: boolean = false;
-
   showInputModificar: boolean = false;
 
-  FormBusquedaApuesta = new FormGroup({
-    TipoBusquedaCliente: new FormControl(),
-    ValorBusquedaCliente: new FormControl(),
+  isSubmitted = {
+    CrearApuesta: false,
+    BusquedaCliente: false,
+    ModificarCliente: false,
+  };
+
+  Catalogos: any = {
+    TicketApuesta: [],
+    PartidoApuesta: [],
+    EquipoApuestaRegistro: [],
+    EquipoApuestaModificar: [],
+  };
+
+  Equipos: any = [];
+  Clientes: any = [];
+
+  inputFormCliente: any = [
+    { label: 'Monto de la apuesta', controlName: 'MontoApuesta' },
+  ];
+
+  selectFormCliente: any = [
+    { label: 'Cliente', controlName: 'TicketApuesta' },
+    { label: 'Partido', controlName: 'PartidoApuesta' },
+    { label: 'Equipo al que deseas apostar', controlName: 'EquipoApuesta' },
+  ];
+
+  selectFormBusquedaCliente: any = [
+    { label: 'id', value: 'id_apuestas' },
+    { label: 'ticket', value: 'id_tickets' },
+  ];
+
+  valoresBusqueda: any = [];
+
+  FormBusquedaCliente = this.formBuilder.group({
+    TipoBusquedaCliente: ['', Validators.required],
+    ValorBusquedaCliente: [1, Validators.required],
   });
 
-  FormCrearApuesta = new FormGroup({
-    PartidoApuesta: new FormControl(),
-    TicketApuesta: new FormControl(),
-    'Monto Apuesta': new FormControl(),
-    EquipoApuesta: new FormControl(),
+  FormCrearApuesta = this.formBuilder.group({
+    MontoApuesta: [0, Validators.required],
+    TicketApuesta: [0, Validators.required],
+    PartidoApuesta: [0, Validators.required],
+    EquipoApuesta: [0, Validators.required],
   });
 
-  FormModificarApuesta = new FormGroup({
-    PartidoApuesta: new FormControl(),
-    TicketApuesta: new FormControl(),
-    'Monto Apuesta': new FormControl(),
-    EquipoApuesta: new FormControl(),
+  setCrearClienteSelectValue() {
+    let equipoApuesta = [];
+    let CrearApuesta: any = {
+      TicketApuesta: this.Catalogos?.TicketApuesta[0]?.id_tickets,
+      PartidoApuesta: this.Catalogos?.PartidoApuesta[0]?.id_partidos,
+    };
+    for (let index = 0; index < this.Equipos.length; index++) {
+      if (
+        this.Equipos[index].NombreEquipo ==
+          this.Catalogos?.PartidoApuesta[0]?.Equipo_Local ||
+        this.Equipos[index].NombreEquipo ==
+          this.Catalogos?.PartidoApuesta[0]?.Equipo_Visitante
+      ) {
+        let objectEquipo = {
+          id_equipos: this.Equipos[index].id_equipos,
+          NombreEquipo: this.Equipos[index].NombreEquipo,
+        };
+        equipoApuesta.push(objectEquipo);
+      }
+    }
+    CrearApuesta.EquipoApuesta = equipoApuesta[0].id_equipos;
+    this.Catalogos.EquipoApuestaRegistro = equipoApuesta;
+    this.FormCrearApuesta.patchValue(CrearApuesta);
+  }
+
+  FormModificarApuesta = this.formBuilder.group({
+    id_apuestas: '',
+    MontoApuesta: [0, Validators.required],
+    TicketApuesta: [0, Validators.required],
+    PartidoApuesta: [0, Validators.required],
+    EquipoApuesta: [0, Validators.required],
   });
 
-  public consultaApuestasTotales() {
-    this.servi.getApuestasTotales().subscribe((data) => {
-      this.Apuestas = data;
-      this.keysApuesta = Object.keys(this.Apuestas[0]);
-      this.filtros(this.FormBusquedaApuesta);
-    });
+  setModificarClienteSelectValue() {
+    let ticket;
+    let partido;
+    let indexPartido = 0;
+    let equipoApuesta = [];
+    for (let index = 0; index < this.Catalogos?.TicketApuesta.length; index++) {
+      if (
+        this.apuestasFiltradas[0]['Cliente'].replace(/ /g, '') ==
+        this.Catalogos?.TicketApuesta[index].cliente.replace(/ /g, '')
+      ) {
+        ticket = this.Catalogos?.TicketApuesta[index].id_tickets;
+      }
+    }
+    for (
+      let index = 0;
+      index < this.Catalogos?.PartidoApuesta.length;
+      index++
+    ) {
+      if (
+        this.apuestasFiltradas[0]['Partido Apuesta'].includes(
+          this.Catalogos?.PartidoApuesta[index].Equipo_Local
+        ) &&
+        this.apuestasFiltradas[0]['Partido Apuesta'].includes(
+          this.Catalogos?.PartidoApuesta[index].Equipo_Visitante
+        )
+      ) {
+        indexPartido = index;
+        partido = this.Catalogos?.PartidoApuesta[index].id_partidos;
+      }
+    }
+    for (let index = 0; index < this.Equipos.length; index++) {
+      if (
+        this.Equipos[index].NombreEquipo ==
+          this.Catalogos?.PartidoApuesta[indexPartido]?.Equipo_Local ||
+        this.Equipos[index].NombreEquipo ==
+          this.Catalogos?.PartidoApuesta[indexPartido]?.Equipo_Visitante
+      ) {
+        let objectEquipo = {
+          id_equipos: this.Equipos[index].id_equipos,
+          NombreEquipo: this.Equipos[index].NombreEquipo,
+        };
+        equipoApuesta.push(objectEquipo);
+      }
+    }
+
+    let ModificarApuesta: any = {
+      id_apuestas: this.apuestasFiltradas[0].id_apuestas,
+      TicketApuesta: ticket,
+      PartidoApuesta: partido,
+      MontoApuesta: this.apuestasFiltradas[0]['Monto Apuesta'],
+    };
+    ModificarApuesta.EquipoApuesta = equipoApuesta[0].id_equipos;
+    this.Catalogos.EquipoApuestaModificar = equipoApuesta;
+    this.FormModificarApuesta.patchValue(ModificarApuesta);
+  }
+
+  public actualizarEquipo(indexPartido: number, Form: FormGroup, tipo: string) {
+    let equipoApuesta = [];
+    for (let index = 0; index < this.Equipos.length; index++) {
+      if (
+        this.Equipos[index].NombreEquipo ==
+          this.Catalogos?.PartidoApuesta[indexPartido]?.Equipo_Local ||
+        this.Equipos[index].NombreEquipo ==
+          this.Catalogos?.PartidoApuesta[indexPartido]?.Equipo_Visitante
+      ) {
+        let objectEquipo = {
+          id_equipos: this.Equipos[index].id_equipos,
+          NombreEquipo: this.Equipos[index].NombreEquipo,
+        };
+        equipoApuesta.push(objectEquipo);
+      }
+    }
+
+    let listaEquipos: any = {
+      EquipoApuesta: equipoApuesta[0].id_equipos
+    };
+    console.log(equipoApuesta);
+
+    switch (tipo) {
+      case 'registrarApuesta':
+        this.Catalogos.EquipoApuestaRegistro = equipoApuesta;
+        break;
+      case 'modificarApuesta':
+        this.Catalogos.EquipoApuestaModificar = equipoApuesta;
+        break;
+    }
+    Form.patchValue(listaEquipos);
   }
 
   public consultaClientesTotales() {
-    this.servi.getClientesTotales().subscribe((data) => {
-      this.Clientes = data;
-    });
-  }
-
-  public consultaTicketsTotales() {
-    this.servi.getTicketTotal().subscribe((data) => {
-      this.Tickets = data;
-    });
-  }
-
-  public consultaPartidosTotales() {
-    this.servi.getPartidoTotal().subscribe((data) => {
-      this.Partidos = data;
+    this.servi.getApuestasTotales().subscribe((data) => {
+      this.Apuestas = data;
+      this.keysApuestas = Object.keys(this.Apuestas[0]);
     });
   }
 
@@ -93,165 +223,160 @@ export class ApuestaComponent implements OnInit {
       this.showTable = false;
   }
 
-  public filtros(Form: FormGroup) {
-    const tipoBusqueda = Form.getRawValue()['TipoBusquedaCliente'];
-    if (tipoBusqueda == 'Cliente') this.switchInputBusqueda = true;
-    else {
-      this.switchInputBusqueda = false;
-    }
-    this.valuefilters = this.listaValoresAtributo(tipoBusqueda);
-  }
-
-  public listaValoresAtributo(tipoBusqueda: string) {
-    let valores: Array<string> = [];
-    let flag: boolean = true;
-    for (let index = 0; index < this.Apuestas.length; index++) {
-      valores.filter((valor) => {
-        if (valor == this.Apuestas[index][tipoBusqueda]) flag = false;
-      });
-      if (flag == true) valores.push(this.Apuestas[index][tipoBusqueda]);
-      flag = true;
-    }
-    return valores;
-  }
-
-  public valoresByEquipo() {
-    return this.servi.getEquiposTotales().pipe(map((data) => data));
-  }
-
-  public async buscarValorEquipo(valor: string) {
-    let id_tipo_catalogo: number = 0;
-    let equipos: any;
-
-    equipos = await this.valoresByEquipo().toPromise();
-
-    for (let index = 0; index < equipos?.length; index++) {
-      if (valor == equipos[index].NombreEquipo) {
-        id_tipo_catalogo = equipos[index].id_equipos;
-      }
-    }
-    return id_tipo_catalogo;
-  }
-
-  public async BuscarApuesta(Form: FormGroup) {
-    const valores = {
-      tipoBusqueda: Form.getRawValue()['TipoBusquedaCliente'],
-      valorFiltro: Form.getRawValue()['ValorBusquedaCliente'],
+  public async getCatalogos() {
+    this.Catalogos = {
+      TicketApuesta: await this.valoresByTicket().toPromise(),
+      PartidoApuesta: await this.valoresByPartido().toPromise(),
     };
-    switch (valores?.tipoBusqueda) {
-      case 'Cliente':
-        this.servi.getApuestaByCliente(valores?.valorFiltro).subscribe(
-          (data) => {
-            this.error = false;
-            this.apuestasFiltradas = data;
-          },
-          (error) => {
-            this.error = true;
+    this.Equipos = await this.valoresByEquipo().toPromise();
+    this.Clientes = await this.valoresByCliente().toPromise();
+  }
+
+  public getValoresBusqueda(tipoBusqueda: string) {
+    switch (tipoBusqueda) {
+      case 'id_tickets':
+        for (
+          let index = 0;
+          index < this.Catalogos.TicketApuesta.length;
+          index++
+        ) {
+          for (let j = 0; j < this.Clientes.length; j++) {
+            if (
+              this.Catalogos.TicketApuesta[index].cliente ==
+              this.Clientes[j]['Primer Nombre'] +
+                ' ' +
+                this.Clientes[j]['Segundo Nombre'] +
+                ' ' +
+                this.Clientes[j]['Primer Apellido'] +
+                ' ' +
+                this.Clientes[j]['Segundo Apellido']
+            ) {
+              this.valoresBusqueda.push({
+                value: this.Clientes[j].id_clientes,
+                label:
+                  this.Clientes[j]['Primer Nombre'] +
+                  ' ' +
+                  this.Clientes[j]['Segundo Nombre'] +
+                  ' ' +
+                  this.Clientes[j]['Primer Apellido'] +
+                  ' ' +
+                  this.Clientes[j]['Segundo Apellido'],
+              });
+            }
           }
-        );
+        }
         break;
       case 'id_apuestas':
-        this.servi.getApuestaByID(valores?.valorFiltro).subscribe((data) => {
-          this.apuestasFiltradas = data;
-          this.apuestaModificable = data;
-        });
+        for (let index = 0; index < this.Apuestas.length; index++) {
+          this.valoresBusqueda.push({
+            value: this.Apuestas[index].id_apuestas,
+            label: this.Apuestas[index].id_apuestas,
+          });
+        }
         break;
-      default:
-        break;
     }
+    let valor = {
+      ValorBusquedaCliente: this.valoresBusqueda[0].value,
+    };
+    this.FormBusquedaCliente.patchValue(valor);
   }
 
-  public getEquipoByParido(form: FormGroup) {
-    const values = form.getRawValue()['PartidoApuesta'];
-    for (let index = 0; index < this.Partidos.length; index++) {
-      if (this.Partidos[index].id_partidos == values) {
-        this.equiposByPartido = [
-          this.Partidos[index].Equipo_Local,
-          this.Partidos[index].Equipo_Visitante,
-        ];
-      }
-    }
-  }
-
-  public async registrarApuesta() {
-    let newApuesta: any = {};
-    const values = this.FormCrearApuesta.getRawValue();
-    for (const key in values) {
-      if (key == 'EquipoApuesta') {
-        newApuesta[key.replace(/ /g, '')] = await this.buscarValorEquipo(
-          values[key]
-        );
-      } else {
-        newApuesta[key.replace(/ /g, '')] = values[key];
-      }
-    }
-
-    try {
-      const res = await this.servi.CrearApuesta(newApuesta);
-      console.log(newApuesta);
-      this.FormCrearApuesta.reset();
-      this.consultaApuestasTotales();
-      console.log(res);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  public async modificarApuesta() {
-    let updateApuesta: any = {};
-    const values = this.apuestasFiltradas[0];
-    for (const key in values) {
-      if (key == 'EquipoApuesta') {
-        updateApuesta[key.replace(/ /g, '')] = await this.buscarValorEquipo(
-          values[key]
-        );
-      } else if(key=='Cliente'){
-        updateApuesta['TicketApuesta'] = values[key];
-      }
-      else {
-        updateApuesta[key.replace(/ /g, '')] = values[key];
-      }
-    }
-    console.log(updateApuesta);
-    try {
-      const res = await this.servi.ModificarApuesta(updateApuesta);
-      console.log(updateApuesta);
-      this.FormModificarApuesta.reset();
-      this.consultaApuestasTotales();
-      console.log(res);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  public InputModificar() {
-    console.log(this.apuestaModificable, this.apuestasFiltradas);
-    if (this.showInputModificar == true) this.showInputModificar = false;
-    else {
-      this.showInputModificar = true;
-    }
-  }
-
-  ngOnInit(): void {
-    this.consultaApuestasTotales();
+  async ngOnInit(): Promise<void> {
     this.consultaClientesTotales();
-    this.consultaPartidosTotales();
-    this.consultaTicketsTotales();
-    this.FormBusquedaApuesta = this.formBuilder.group({
-      TipoBusquedaCliente: [],
-      ValorBusquedaCliente: '',
-    });
-    this.FormCrearApuesta = this.formBuilder.group({
-      PartidoApuesta: 0,
-      TicketApuesta: 0,
-      'Monto Apuesta': 10000,
-      EquipoApuesta: '',
-    });
-    this.FormModificarApuesta = this.formBuilder.group({
-      PartidoApuesta: 0,
-      TicketApuesta: 0,
-      'Monto Apuesta': 0,
-      EquipoApuesta: '',
-    });
+    await this.getCatalogos();
+    this.setCrearClienteSelectValue();
+    this.FormBusquedaCliente.get('TipoBusquedaCliente')?.valueChanges.subscribe(
+      (tipo) => {
+        this.valoresBusqueda = [];
+        this.getValoresBusqueda(tipo);
+      }
+    );
+    this.FormCrearApuesta.get('PartidoApuesta')?.valueChanges.subscribe(
+      (partido) =>{
+        this.actualizarEquipo(
+          partido - 1,
+          this.FormCrearApuesta,
+          'registrarApuesta'
+        );
+      }
+    );
+    this.FormModificarApuesta.get('PartidoApuesta')?.valueChanges.subscribe(
+      (partido) => {
+        this.actualizarEquipo(
+          partido - 1,
+          this.FormModificarApuesta,
+          'modificarApuesta'
+        );
+      }
+    );
+    let valor = {
+      TipoBusquedaCliente: 'id_apuestas',
+    };
+    this.FormBusquedaCliente.patchValue(valor);
+  }
+
+  async onSubmitCrearCliente(): Promise<void> {
+    if (!this.FormCrearApuesta.invalid) {
+      const newCliente = this.FormCrearApuesta.value;
+      try {
+        const res = await this.servi.CrearApuesta(newCliente);
+        console.log(newCliente);
+        this.FormCrearApuesta.reset();
+        this.setCrearClienteSelectValue();
+        this.consultaClientesTotales();
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      this.isSubmitted.CrearApuesta = true;
+    }
+  }
+
+  async onSubmitBuscarCliente(): Promise<void> {
+    const valoresBusqueda = this.FormBusquedaCliente.value;
+    try {
+      switch (valoresBusqueda.TipoBusquedaCliente) {
+        case 'id_tickets':
+          this.servi
+            .getApuestaByCliente(valoresBusqueda.ValorBusquedaCliente)
+            .subscribe((data) => {
+              this.apuestasFiltradas = data;
+              this.setModificarClienteSelectValue();
+            });
+          break;
+
+        default:
+          this.servi
+            .getApuestaByID(valoresBusqueda.ValorBusquedaCliente)
+            .subscribe((data) => {
+              this.apuestasFiltradas = data;
+              this.setModificarClienteSelectValue();
+            });
+          break;
+      }
+    } catch (error) {}
+  }
+
+  async onSubmitModificarCliente(): Promise<any> {
+    if (!this.FormModificarApuesta.invalid) {
+      const updateApuesta = this.FormModificarApuesta.value;
+      try {
+        console.log(updateApuesta);
+        const res = await this.servi.ModificarApuesta(updateApuesta);
+        this.consultaClientesTotales();
+        this.FormModificarApuesta.reset;
+        this.apuestasFiltradas = [];
+        this.FormBusquedaCliente.get('TipoBusquedaCliente')?.setValue(
+          'id_apuestas'
+        );
+        this.FormBusquedaCliente.get('ValorBusquedaCliente')?.setValue(
+          updateApuesta.id_apuestas
+        );
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
+    }
   }
 }
