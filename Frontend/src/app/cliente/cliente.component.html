@@ -1,4 +1,3 @@
-
 <body>
   <div class="listaU">
     <h1>Todos los clientes</h1>
@@ -18,35 +17,35 @@
   <br>
   <div class="listaU">
     <h1>Registro Cliente</h1>
-    <form action="" [formGroup]="FormCrearCliente">
+    <form [formGroup]="FormCrearCliente" (ngSubmit)="onSubmitCrearCliente()">
       <div style="display: flex; flex-wrap: wrap;">
-        <div style="margin: 10px;" *ngFor="let atributo of ['Primer Nombre','Segundo Nombre','Primer Apellido','Segundo Apellido', 'NumeroDocumento']">
-        <label for="{{atributo}}">{{atributo}}</label>
-        <input type="text" formControlName="{{atributo}}">
+        <div style="margin: 10px;" *ngFor="let input of inputFormCliente">
+        <label for="{{input.controlName}}">{{input.label}}</label>
+        <input type="text" formControlName="{{input.controlName}}" [class.invalid]="FormCrearCliente.get(input.controlName)?.invalid && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)">
+        <span *ngIf="FormCrearCliente.get(input.controlName)?.hasError('required') && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)" >This field is required</span>
         </div>
-        <div style="margin: 10px;" *ngFor="let atributo of ['Tipo Documento','Sexo','Metodo De Pago']">
-          <label for="{{atributo}}">{{atributo}}</label>
-          <select formControlName="{{atributo}}">
-            <option *ngFor="let valor of listaValoresAtributo(atributo)" value="{{valor}}">{{valor}}</option>
+        <div style="margin: 10px;" *ngFor="let select of selectFormCliente">
+          <label for="{{select.controlName}}">{{select.label}}</label>
+          <select formControlName="{{select.controlName}}">
+            <option *ngFor="let catalogo of Catalogos[select.controlName]" [ngValue]="catalogo?.id_catalogo_universal">{{catalogo?.NombreCatalogo}}</option>
           </select>
         </div>
       </div>
+      <button type="submit" class="button">Crear Cliente</button>
     </form>
-    <button (click)="registrarCliente()">Crear Cliente</button>
   </div>
   <br>
   <div class="listaU">
     <h1>Busqueda Cliente</h1>
-    <form action="" [formGroup]="FormBusquedaCliente">
-      <select formControlName="TipoBusquedaCliente" (change)="filtros(FormBusquedaCliente)">
-      <option value="id_clientes">id</option>
-      <option value="Tipo Documento">Tipo de Documento</option>
+    <form [formGroup]="FormBusquedaCliente" (ngSubmit)="onSubmitBuscarCliente()">
+      <select formControlName="TipoBusquedaCliente">
+        <option *ngFor="let tipoBusqueda of selectFormBusquedaCliente" [ngValue]="tipoBusqueda.value">{{tipoBusqueda.label}}</option>
       </select>
       <select formControlName="ValorBusquedaCliente">
-      <option *ngFor="let opcion of valuefilters" value="{{opcion}}">{{opcion}}</option>
+        <option *ngFor="let valor of valoresBusqueda" [ngValue]="valor.value">{{valor.label}}</option>
       </select>
+      <button type="submit">Buscar Cliente</button>
     </form>
-    <button (click)="BuscarCliente(FormBusquedaCliente)">Busqueda Cliente</button>
     <table *ngIf="clientesFiltrados.length >=1">
         <thead>
           <th *ngFor="let key of keysCliente">{{key}}</th>
@@ -56,29 +55,26 @@
             <th *ngFor="let key of keysCliente">{{cliente[key]}}</th>
           </tr>
         </tbody>
-      </table>
-    <h1>Modificar cliente</h1>
-    <button (click)="InputModificar()" *ngIf="clientesFiltrados.length >=1 && !showInputModificar">Deseo modificar el cliente</button>
-    <h3 *ngIf="clientesFiltrados.length <1">Para poder modificar un cliente antes debes buscar cual quieres modificar</h3>
-    <h3 *ngIf="clientesFiltrados.length >1 && showInputModificar">Solo puedes modificar un cliente a la vez, usa la busqueda por id e intenta nuevamente</h3>
-    <form action="" [formGroup]="FormModificarCliente">
-      <div *ngIf="showInputModificar && clientesFiltrados.length ==1">
-        <div style="display: flex; flex-wrap: wrap;" *ngFor="let cliente of clientesFiltrados">
-
-          <div style="margin: 10px;" *ngFor="let atributo of ['Primer Nombre','Segundo Nombre','Primer Apellido','Segundo Apellido', 'Numero Documento']">
-          <label for="{{atributo}}">{{atributo}}</label>
-          <input type="text" [(ngModel)]="cliente[atributo]" [ngModelOptions]="{standalone: true}">
-          </div>
-          <div style="margin: 10px;" *ngFor="let atributo of ['Tipo Documento','Sexo','Metodo De Pago']">
-            <label for="{{atributo}}">{{atributo}}</label>
-            <select [(ngModel)]="cliente[atributo]" [ngModelOptions]="{standalone: true}" >
-              <option *ngFor="let valor of listaValoresAtributo(atributo)" value="{{valor}}">{{valor}}</option>
-            </select>
-          </div>
+    </table>
+      <br>
+    <h1>Modificar Cliente</h1>
+    <h3 *ngIf="clientesFiltrados.length==0">Para modificar un cliente, antes debes buscarlo por id o nombre</h3>
+    <h3 *ngIf="clientesFiltrados.length>1">Solo puedes modificar un cliente, haz una busqueda mas especifica, sea por nombre o id</h3>
+    <form *ngIf="clientesFiltrados.length==1" [formGroup]="FormModificarCliente" (ngSubmit)="onSubmitModificarCliente()">
+      <div style="display: flex; flex-wrap: wrap;">
+        <div style="margin: 10px;" *ngFor="let input of inputFormCliente">
+        <label for="{{input.controlName}}">{{input.label}}</label>
+        <input type="text" formControlName="{{input.controlName}}" [class.invalid]="FormCrearCliente.get(input.controlName)?.invalid && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)">
+        <span *ngIf="FormCrearCliente.get(input.controlName)?.hasError('required') && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)">This field is required</span>
         </div>
-        <br>
-        <button (click)="modificarCliente()">Modificar Cliente</button>
+        <div style="margin: 10px;" *ngFor="let select of selectFormCliente">
+          <label for="{{select.controlName}}">{{select.label}}</label>
+          <select formControlName="{{select.controlName}}">
+            <option *ngFor="let catalogo of Catalogos[select.controlName]" [ngValue]="catalogo?.id_catalogo_universal">{{catalogo?.NombreCatalogo}}</option>
+          </select>
+        </div>
       </div>
+      <button type="submit" class="button">Modificar Cliente</button>
     </form>
   </div>
 </body>
