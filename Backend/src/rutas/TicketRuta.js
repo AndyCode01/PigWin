@@ -43,8 +43,8 @@ router.get("/id/:id", function (req, res) {
 router.post("/", function (req, res) {
   var TicketData = {
     FechaTicket: req.body.FechaTicket,
-    PuntoVentaTicket: req.body.PuntoVentaTicket,
-    ClienteTicket: req.body.ClienteTicket,
+    PuntoVentaTicket: req.body.NombrePuntoVenta,
+    ClienteTicket: req.body.cliente,
   };
 
   //usamos la funcion para insertar
@@ -62,8 +62,8 @@ router.put("/", function (req, res) {
   var TicketData = {
     id_tickets: req.body.id_tickets,
     FechaTicket: req.body.FechaTicket,
-    PuntoVentaTicket: req.body.PuntoVentaTicket,
-    ClienteTicket: req.body.ClienteTicket,
+    PuntoVentaTicket: req.body.NombrePuntoVenta,
+    ClienteTicket: req.body.cliente,
   };
 
   TicketModelo.updateTicket(TicketData, function (error, data) {

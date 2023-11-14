@@ -1,191 +1,92 @@
 <body>
-
-    <div style="text-align:center">
-        <h1>{{ title }}</h1>
-        <img width="300" alt="Logo Proyecto" src="/assets/parque-tematico.png">
-    </div>
-
-    <br><br>
-
-    <div class="dir">
-
-    </div>
-    <br><br>
-
-    <!--------------------------------------------------------------------------------------------->
-    <!-- para mostrar los Catalogos Totales -->
-
-    <div class="listaTicket">
-
-        <h2>Todos los Tickets</h2>
-
-        <form (ngSubmit)="consultaTicketsTotales(true)" [formGroup]="listarTicketsTotales">
-
-            <button type="submit" style="margin-right: 30px">Listar todos los Catalogos</button>
-            <button (click)="LimpiarLista(false)" style="scroll-margin-left: 30px">Limpiar todos los Catalogos</button>
-
-            <br><br>
-            <div *ngIf="flag">
-                <h2>{{tituloTicketLista}}</h2>
-                <table>
-                    <thead>
-                        <th>{{tablaticketstotales[0]}}</th>
-                        <th>{{tablaticketstotales[1]}}</th>
-                        <th>{{tablaticketstotales[2]}}</th>
-                        <th>{{tablaticketstotales[3]}}</th>
-                    </thead>
-
-                    <tbody>
-                        <tr *ngFor='let tick of TicketUniT'>
-
-                            <th>{{tick.id_tickets}} </th>
-                            <th>{{tick.FechaTicket}} </th>
-                            <th>{{tick.NombrePuntoVenta}} </th>
-                            <th>{{tick.cliente}} </th>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-        </form>
-    </div>
-    <br><br>
-
-    <div class="listaTicketPuntoventa">
-    
-        <h2>Buscar por punto de Venta</h2>
-        <form (ngSubmit)="SelTipPuntoVenta()" [formGroup]="ConsultarTiketByPuntoVentaU">
-
-            <span class="spn_lbl">Ticket a Editar</span>
-            <label>
-                <select class="dropdown2" formControlName="CBTicketPuntoVenta" (click)="consultaPuntoVentaTotales()">
-                    <option value="value1">Ticket</option>
-                    <option *ngFor="let caese of puntoVentaTotales" [value]="caese.id_punto_venta">
-                        {{caese.NombrePuntoVenta}}
-                    </option>
-                </select>
-            </label>
-            <br> <br>
-            <button type="submit">Buscar Ticket a Editar</button>
-          
-
-
-            <br /><br />
-
-            <h2>{{tituloTicketUniListaPuntoVenta}}</h2>
-
-            <table>
-                <thead>
-                    <th>{{tablaticketsPuntoVenta[0]}}</th>
-                    <th>{{tablaticketsPuntoVenta[1]}}</th>
-                    <th>{{tablaticketsPuntoVenta[2]}}</th>
-                    <th>{{tablaticketsPuntoVenta[3]}}</th>
-                </thead>
-
-                <tbody>
-                    <tr *ngFor="let pacudoc of TicketUniTPunto">
-                        <th>{{pacudoc.id_tickets}}</th>
-                        <th>{{pacudoc.FechaTicket}}</th>
-                        <th>{{pacudoc.PuntoVentaTicket}}</th>
-                        <th>{{pacudoc.PrimerNombre}} {{pacudoc.PrimerApellido}}</th>
-                    </tr>
-                </tbody>
-            </table>
-        </form>
-    </div>
-
-    <br /><br />
-
-
-    <div class="creaTicket">
-
-        <h2>Registrar Ticket</h2>
-
-        <form (ngSubmit)="insertarNuevoTicket()" [formGroup]="CrearTicketU">
-
-            <!-- Los otros controles para la captura de los datos del Catalogo -->
-
-            <span class="spn_lbl">Fecha Ticket: </span>
-
-            <label for="textNueFechaTicket">
-
-                <input type="datetime-local" name="TtextNueFechaTicket" id="TtextNueFechaTicket"
-                    formControlName="textNueFechaTicket">
-
-            </label>
-
-            <br><br>
-
-            <span class="spn_lbl">Punto Venta: </span>
-            <label for="textNuePuntoVentaTicket">
-                 <input type="text" name="TtextNuePuntoVentaTicket" id="TtextNuePuntoVentaTicket"
-                    formControlName="textNuePuntoVentaTicket">
-            </label>
-            <br> <br>
-
-            <span class="spn_lbl">Cliente: </span>
-
-            <label for="textNueCliente">
-
-                <input type="text" name="TtextNueCliente" id="TtextNueCliente" formControlName="textNueCliente">
-
-            </label>
-
-            <br><br>
-
-            <button type="submit">Registrar Ticket</button>
-
-            <br><br>
-        </form>
-    </div>
-    <br><br>
-
-    <!-- para Actualizar un Catalogo Universal -->
-    <div class="editTicket">
-        <h2>Modificar un Ticket</h2>
-        <form (ngSubmit)="SelTicketEditar()" [formGroup]="ActTicketU">
-
-            <span class="spn_lbl">Ticket a Editar</span>
-            <label>
-                <select class="dropdown2" formControlName="CBTicketEdi" (click)="consultaTicketsTotales(false)">
-                    <option value="value1">Ticket</option>
-                    <option *ngFor="let caese of TicketUniT" [value]="caese.id_tickets">
-                        {{caese.id_tickets}}
-                    </option>
-                </select>
-            </label>
-            <br> <br>
-            <button type="submit">Buscar Ticket a Editar</button>
-
-            <h2>{{titloTicketEditar}}</h2>
-            <li *ngFor="let cae of TicketCataEdi">
-
-                <!-- Los otros controles para la captura de los datos deL cATALOGO -->
-                <span class="spn_lbl">Fecha ticket: </span>
-                <label for="CtextNueFechaTicketEdi"><input type="datetime-local" name="CtextNueFechaTicketEdi"
-                        id="CtextNueFechaTicketEdi" value={{cae.FechaTicket}} [(ngModel)]="cae.FechaTicket"
-                        [value]="cae.FechaTicket" formControlName="textNueFechaTicketEdi">
-                </label>
-                <br><br>
-
-                <span class="spn_lbl">Punto Venta: </span>
-                <label for="CtextNuePuntoVentaEdi"><input type="text" name="CtextNuePuntoVentaEdi"
-                        id="CtextNuePuntoVentaEdi" value={{cae.PuntoVentaTicket}} [(ngModel)]="cae.PuntoVentaTicket"
-                        [value]="cae.PuntoVentaTicket" formControlName="textNuePuntoVentaEdi">
-                </label>
-                <br><br>
-
-                <span class="spn_lbl">Cliente: </span>
-                <label for="CtextNueClienteEdi"><input type="text" name="CtextNueClienteEdi" id="CtextNueClienteEdi"
-                        value={{cae.ClienteTicket}} [(ngModel)]="cae.ClienteTicket" [value]="cae.ClienteTicket"
-                        formControlName="textNueClienteEdi">
-                </label>
-                <br><br>
-            </li>
-            <br><br>
-
-            <button (click)="ActualizarTicket()">Actualizar Registro</button>
-
-            <br><br>
-        </form>
-    </div>
+  <div class="listaU">
+    <h1>Todos los Tickets</h1>
+    <button (click)="mostrarTabla()">Mostrar Tickets</button>
+    <button (click)="limpiarLista()">Limpiar</button>
+      <table *ngIf="showTable">
+        <thead>
+          <th *ngFor="let key of keysTickets">{{key}}</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of Tickets ">
+            <th *ngFor="let key of keysTickets">{{cliente[key]}}</th>
+          </tr>
+        </tbody>
+      </table>
+  </div>
+  <br>
+  <div class="listaU">
+    <h1>Registro Ticket</h1>
+    <form [formGroup]="FormCrearCliente" (ngSubmit)="onSubmitCrearTicket()">
+      <div style="display: flex; flex-wrap: wrap;">
+        <div style="margin: 10px;" *ngFor="let input of inputFormCliente">
+        <label for="{{input.controlName}}">{{input.label}}</label>
+        <input type="datetime-local" formControlName="{{input.controlName}}" [class.invalid]="FormCrearCliente.get(input.controlName)?.invalid && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)">
+        <span *ngIf="FormCrearCliente.get(input.controlName)?.hasError('required') && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)" >This field is required</span>
+        </div>
+        <div style="margin: 10px;">
+          <label for="NombrePuntoVenta">Punto de venta</label>
+          <select formControlName="NombrePuntoVenta">
+            <option *ngFor="let tickets of Catalogos.PuntoVenta" [ngValue]="tickets.id_punto_venta">{{tickets.NombrePuntoVenta}}</option>
+          </select>
+        <div style="margin: 10px;">
+          <label for="cliente">Ticket</label>
+          <select formControlName="cliente">
+            <option *ngFor="let tickets of Catalogos.cliente" [ngValue]="tickets.id_clientes">{{tickets['Primer Nombre']}} {{tickets['Segundo Nombre']}} {{tickets['Primer Apellido']}}</option>
+          </select>
+        </div>
+        </div>
+      </div>
+      <button type="submit" class="button">Crear Ticket</button>
+    </form>
+  </div>
+  <br>
+  <div class="listaU">
+    <h1>Busqueda Ticket</h1>
+    <form [formGroup]="FormBusquedaCliente" (ngSubmit)="onSubmitBuscarCliente()">
+      <select formControlName="TipoBusquedaCliente">
+        <option *ngFor="let tipoBusqueda of selectFormBusquedaCliente" [ngValue]="tipoBusqueda.value">{{tipoBusqueda.label}}</option>
+      </select>
+      <select formControlName="ValorBusquedaCliente">
+        <option *ngFor="let valor of valoresBusqueda" [ngValue]="valor.value">{{valor.label}}</option>
+      </select>
+      <button type="submit">Buscar Ticket</button>
+    </form>
+    <table *ngIf="ticketsFiltrados.length >=1">
+        <thead>
+          <th *ngFor="let key of keysTickets">{{key}}</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of ticketsFiltrados ">
+            <th *ngFor="let key of keysTickets">{{cliente[key]}}</th>
+          </tr>
+        </tbody>
+    </table>
+      <br>
+    <h1>Modificar Ticket</h1>
+    <h3 *ngIf="ticketsFiltrados.length==0">Para modificar un cliente, antes debes buscarlo por id o nombre</h3>
+    <h3 *ngIf="ticketsFiltrados.length>1">Solo puedes modificar un cliente, haz una busqueda mas especifica, sea por nombre o id</h3>
+    <form *ngIf="ticketsFiltrados.length==1" [formGroup]="FormModificarCliente" (ngSubmit)="onSubmitModificarCliente()">
+      <div style="display: flex; flex-wrap: wrap;">
+        <div style="margin: 10px;" *ngFor="let input of inputFormCliente">
+        <label for="{{input.controlName}}">{{input.label}}</label>
+        <input type="datetime-local" formControlName="{{input.controlName}}" [class.invalid]="FormCrearCliente.get(input.controlName)?.invalid && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)">
+        <span *ngIf="FormCrearCliente.get(input.controlName)?.hasError('required') && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)">This field is required</span>
+        </div>
+        <div style="margin: 10px;">
+          <label for="NombrePuntoVenta">Punto de venta</label>
+          <select formControlName="NombrePuntoVenta">
+            <option *ngFor="let catalogo of Catalogos.PuntoVenta" [ngValue]="catalogo?.id_punto_venta">{{catalogo?.NombrePuntoVenta}}</option>
+          </select>
+        </div>
+        <div style="margin: 10px;">
+          <label for="cliente">Cliente</label>
+          <select formControlName="cliente">
+            <option *ngFor="let catalogo of Catalogos.cliente" [ngValue]="catalogo?.id_clientes">{{catalogo['Primer Nombre']}} {{catalogo['Segundo Nombre']}} {{catalogo['Primer Apellido']}}</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="button">Modificar Ticket</button>
+    </form>
+  </div>
+</body>

@@ -50,10 +50,9 @@ TicketModelo.getTicketById = function (id, callback) {
   if (connection) {
     var sql =
       "SELECT t.id_tickets, " +
-      "DATE_FORMAT(t.FechaTicket, '  %d/%m/%Y %H:%i ') AS 'FechaTicket', " +
-      "pv.NombrePuntoVenta, " +
-      "t.PuntoVentaTicket, " +
-      "t.ClienteTicket " +
+      "t.FechaTicket , " +
+      "pv.NombrePuntoVenta, " + 
+      "CONCAT (c.PrimerNombre, ' ', c.SegundoNombre, ' ' , c.PrimerApellido, ' ',c.SegundoApellido) AS 'cliente'" +
       "FROM Tickets AS t " +
       "LEFT JOIN punto_venta AS pv ON t.PuntoVentaTicket = pv.id_punto_venta " +
       "LEFT JOIN clientes AS c ON t.ClienteTicket = c.id_clientes WHERE t.id_tickets = " +

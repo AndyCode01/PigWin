@@ -1,14 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormGroup,
-  FormBuilder,
-  FormControl,
-  Validators,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-
 import { MiservicioService } from '../miservicio.service';
+import { map } from 'rxjs/operators';
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-ticket',
@@ -22,253 +17,245 @@ export class TicketComponent implements OnInit {
     Router: Router
   ) {}
 
-  title = 'Manejo de Tickets';
-  tituloTicketLista = '';
-  tituloTicketUniListaPuntoVenta = '';
-  titloTicketBuscado = '';
-  titloTicketEditar = '';
-  
-  //Crear
-  TicketUniT: any = [];
-  //Editar
-  TicketCataEdi: any = [];
-  //TicketUniTicket: any = [];
+  public valoresByPuntoVenta() {
+    return this.servi.getPuntoVentaTotales().pipe(map((data) => data));
+  }
 
-  // por punto de venta -> Para la consulta por punto de venta
-  puntoVentaTotales: any=[];
-  
-  //Para tipo 
-  TicketUniTPunto: any = [];
-  
-  //Listar
-  tablaticketstotales: any = [];
-  tablaticketsPuntoVenta: any = []; 
+  public valoresByCliente() {
+    return this.servi.getClientesTotales().pipe(map((data) => data));
+  }
 
-  BuscarEvalor = 1;
-  controlLista = 1;
+  //Objeto donde se guarda la info del cliente
+  Tickets: Array<any> = [];
+  keysTickets: Array<any> = [];
+  ticketsFiltrados: Array<any> = [];
 
-  flag:boolean = false
+  showTable: boolean = false;
+  showInputModificar: boolean = false;
 
-  listarTicketsTotales = new FormGroup({});
+  isSubmitted = {
+    CrearCliente: false,
+    BusquedaCliente: false,
+    ModificarCliente: false,
+  };
 
-  CrearTicketU = new FormGroup({
-    textNueFechaTicket: new FormControl(),
-    textNuePuntoVentaTicket: new FormControl(),
-    textNueCliente: new FormControl(),
+  Catalogos: any = {
+    PuntoVenta: [],
+    cliente: [],
+  };
+
+  inputFormCliente: any = [
+    { label: 'Fecha del ticket', controlName: 'FechaTicket' },
+  ];
+
+  selectFormCliente: any = [
+    { label: 'Punto de venta', controlName: 'NombrePuntoVenta' },
+    { label: 'Cliente', controlName: 'cliente' },
+  ];
+
+  selectFormBusquedaCliente: any = [
+    { label: 'id', value: 'id_tickets' },
+    { label: 'Punto de venta', value: 'id_punto_venta' },
+  ];
+
+  valoresBusqueda: any = [];
+
+  FormBusquedaCliente = this.formBuilder.group({
+    TipoBusquedaCliente: ['', Validators.required],
+    ValorBusquedaCliente: [1, Validators.required],
   });
 
-  ActTicketU = new FormGroup({
-    CBTicketEdi: new FormControl(),
-    //CBTipoCatalogoEdi: new FormControl(), // Ojo al parecer no se usa
-    textNueFechaTicketEdi: new FormControl(),
-    textNuePuntoVentaEdi: new FormControl(),
-    textNueClienteEdi: new FormControl(),
+  FormCrearCliente = this.formBuilder.group({
+    FechaTicket: ['', Validators.required],
+    NombrePuntoVenta: [0, Validators.required],
+    cliente: [0, Validators.required],
   });
 
-  //BuscarPorPuntoVenta = new FormGroup({
-    //CBPuntoVenta: new FormControl(),
+  setCrearClienteSelectValue() {
+    let CrearCliente = {
+      NombrePuntoVenta: this.Catalogos?.PuntoVenta[0]?.id_punto_venta,
+      cliente: this.Catalogos?.cliente[0]?.id_clientes,
+    };
+    this.FormCrearCliente.patchValue(CrearCliente);
+  }
 
-  //})
-
-  //Por punto de venta
-     
-    ConsultarTiketByPuntoVentaU = new FormGroup({
-      CBTicketPuntoVenta: new FormControl(),
-      //TicketPuntoVentafiltro: new FormControl(),
-      //textPuntoVenta: new FormControl(),
+  FormModificarCliente = this.formBuilder.group({
+    id_tickets: '',
+    FechaTicket: ['', Validators.required],
+    NombrePuntoVenta: [0, Validators.required],
+    cliente: [0, Validators.required],
   });
 
+  setModificarClienteSelectValue() {
+    let nombrePuntoVenta;
+    let cliente;
+    for (let index = 0; index < this.Catalogos?.PuntoVenta.length; index++) {
+      if (
+        this.ticketsFiltrados[0]['NombrePuntoVenta'] ==
+        this.Catalogos?.PuntoVenta[index].NombrePuntoVenta
+      )
+        nombrePuntoVenta = this.Catalogos?.PuntoVenta[index].id_punto_venta;
+    }
+    for (let index = 0; index < this.Catalogos?.cliente.length; index++) {
+      if (
+        this.ticketsFiltrados[0]['cliente'] ==
+        this.Catalogos?.cliente[index]['Primer Nombre'] +
+          ' ' +
+          this.Catalogos?.cliente[index]['Segundo Nombre'] +
+          ' ' +
+          this.Catalogos?.cliente[index]['Primer Apellido'] +
+          ' ' +
+          this.Catalogos?.cliente[index]['Segundo Apellido']
+      )
+        cliente = this.Catalogos?.cliente[index].id_clientes;
+    }
+    const fechaTicket = new Date(this.ticketsFiltrados[0].FechaTicket);
+    const utcFechaTicket = new Date(
+      fechaTicket.getTime() + fechaTicket.getTimezoneOffset() * 60 * 1000
+    );
+    const formattedFechaTicket = formatDate(
+      utcFechaTicket,
+      'yyyy-MM-ddTHH:mm',
+      'en-US'
+    );
 
-  public consultaTicketsTotales(list:boolean) {
-    if (this.controlLista == 1) {
-      this.servi.getTicketTotal().subscribe(
-        (data: { tickets: [] }) => {
-          if(list==true)this.flag=list
-          this.TicketUniT = data; //JSON.parse(data);
-          this.tituloTicketLista = 'LISTA DE TODOS LOS TICKETS';
-          this.tablaticketstotales[0] = 'id tickets';
-          this.tablaticketstotales[1] = 'Fecha Ticket';
-          this.tablaticketstotales[2] = 'Punto venta';
-          this.tablaticketstotales[3] = 'Cliente';
-        },
-        (error) => {
-          console.error(error + ' ');
+    let ModificarCliente = {
+      id_tickets: this.ticketsFiltrados[0].id_tickets,
+      FechaTicket: formattedFechaTicket,
+      NombrePuntoVenta: nombrePuntoVenta,
+      cliente: cliente,
+    };
+    this.FormModificarCliente.patchValue(ModificarCliente);
+  }
+
+  public consultarTicketsTotales() {
+    this.servi.getTicketTotal().subscribe((data) => {
+      this.Tickets = data;
+      this.keysTickets = Object.keys(this.Tickets[0]);
+    });
+  }
+
+  public mostrarTabla() {
+    this.showTable = true;
+  }
+
+  public limpiarLista() {
+    if (this.Tickets.length > 1 && this.showTable == true)
+      this.showTable = false;
+  }
+
+  public async getCatalogos() {
+    this.Catalogos = {
+      PuntoVenta: await this.valoresByPuntoVenta().toPromise(),
+      cliente: await this.valoresByCliente().toPromise(),
+    };
+  }
+
+  public getValoresBusqueda(tipoBusqueda: string) {
+    switch (tipoBusqueda) {
+      case 'id_punto_venta':
+        for (let index = 0; index < this.Catalogos.PuntoVenta.length; index++) {
+          this.valoresBusqueda.push({
+            value: this.Catalogos.PuntoVenta[index].id_punto_venta,
+            label: this.Catalogos.PuntoVenta[index].NombrePuntoVenta,
+          });
         }
-      );
+        break;
+      case 'id_tickets':
+        for (let index = 0; index < this.Tickets.length; index++) {
+          this.valoresBusqueda.push({
+            value: this.Tickets[index].id_tickets,
+            label: this.Tickets[index].id_tickets,
+          });
+        }
+        break;
+    }
+    let valor = {
+      ValorBusquedaCliente: this.valoresBusqueda[0].value,
+    };
+    this.FormBusquedaCliente.patchValue(valor);
+  }
+
+  async ngOnInit(): Promise<void> {
+    this.consultarTicketsTotales();
+    await this.getCatalogos();
+    this.setCrearClienteSelectValue();
+    this.FormBusquedaCliente.get('TipoBusquedaCliente')?.valueChanges.subscribe(
+      (tipo) => {
+        this.valoresBusqueda = [];
+        this.getValoresBusqueda(tipo);
+      }
+    );
+    let valor = {
+      TipoBusquedaCliente: 'id_tickets',
+    };
+    this.FormBusquedaCliente.patchValue(valor);
+  }
+
+  async onSubmitCrearTicket(): Promise<void> {
+    if (!this.FormCrearCliente.invalid) {
+      const newTicket = this.FormCrearCliente.value;
+      console.log(newTicket);
+
+      try {
+        const res = await this.servi.CrearTicketU(newTicket);
+        console.log(newTicket);
+        this.FormCrearCliente.reset();
+        this.setCrearClienteSelectValue();
+        this.consultarTicketsTotales();
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
     } else {
-      this.TicketUniT = null;
-      this.tituloTicketLista = '';
-      this.tablaticketstotales[0] = '';
-      this.tablaticketstotales[1] = '';
-      this.tablaticketstotales[2] = '';
-      this.tablaticketstotales[3] = '';
-      this.controlLista = 1;
+      this.isSubmitted.CrearCliente = true;
     }
   }
 
-  public LimpiarLista(list:boolean) {
-    if(list==false)this.flag=list
-    this.controlLista = 0;
-  }
+  async onSubmitBuscarCliente(): Promise<void> {
+    const valoresBusqueda = this.FormBusquedaCliente.value;
+    try {
+      switch (valoresBusqueda.TipoBusquedaCliente) {
+        case 'id_punto_venta':
+          this.servi
+            .getTicketTipPuntoVenta(valoresBusqueda.ValorBusquedaCliente)
+            .subscribe((data) => {
+              this.ticketsFiltrados = data;
+              this.setModificarClienteSelectValue();
+            });
+          break;
 
- // por punto de venta -> trae la consulta general de los puntos de venta 
- // 
-  public consultaPuntoVentaTotales() {
-    this.servi.getPuntoVentaTotales().subscribe(
-      (data:{puntoVenta:[]})=>{
-        this.puntoVentaTotales = data;
-      },(error)=>{
-        console.error(error + ' ');
+        default:
+          this.servi
+            .getTicketSeleccionado(valoresBusqueda.ValorBusquedaCliente)
+            .subscribe((data) => {
+              this.ticketsFiltrados = data;
+              this.setModificarClienteSelectValue();
+            });
+          break;
       }
-    )
-    
+    } catch (error) {}
   }
 
-  // public consultaTipoPuntoVenta(cadoc: any) {
-  //   if (this.controlLista == 1) {
-  //     this.servi.getTicketTipPuntoVenta('/'+cadoc).subscribe(
-  //       (data: { tickets: [] }) => {
-  //         this.TicketUniTPunto = data; //JSON.parse(data);
-  //         console.log(this.TicketUniTPunto);
-  //         this.tituloTicketLista = 'LISTA DE TODOS LOS TICKETS';
-  //         this.tablaticketsPuntoVenta[0] = 'Id';
-  //         this.tablaticketsPuntoVenta[1] = 'Fecha Ticket';
-  //         this.tablaticketsPuntoVenta[2] = 'Punto venta';
-  //         this.tablaticketsPuntoVenta[3] = 'Cliente';
-  //       },
-  //       (error) => {
-  //         console.error(error + ' ');
-  //       }
-  //     );
-  //   } else {
-  //     this.TicketUniTPunto = null;
-  //     this.tituloTicketLista = '';
-  //     this.tablaticketsPuntoVenta[0] = '';
-  //     this.tablaticketsPuntoVenta[1] = '';
-  //     this.tablaticketsPuntoVenta[2] = '';
-  //     this.tablaticketsPuntoVenta[3] = '';
-
-  //     this.controlLista = 1;
-  //   }
-  // }
-
-  public LimpiarTablaDoc() {
-    this.TicketUniTPunto = null; // Establece los datos en null para limpiar la tabla de "Pacientes Tipo Documento"
-    this.tituloTicketUniListaPuntoVenta = ''; // Limpia el título de la tabla si es necesario
-    this.tablaticketsPuntoVenta = []; // Limpia las columnas de la tabla si es necesario
-    this.controlLista = 0;
-  }
-
-
-  // ticketSelecciondo : any;
-
-  // obtenerTicketSeleccionado(id_ticket: any){
-  //   this.servi.getTicketSeleccionado(id_ticket).subscribe((data)=> {
-  //     this.ticketSelecciondo = data;
-  //   })
-  // }
-  
-
-  insertarNuevoTicket() {
-    var datosvalo1 = this.CrearTicketU.getRawValue()['textNueFechaTicket'];
-    var datosvalo2 = this.CrearTicketU.getRawValue()['textNuePuntoVentaTicket']; //JSON armado
-    var datosvalo3 = this.CrearTicketU.getRawValue()['textNueCliente']; //JSON armado
-
-    var cadena = {
-      FechaTicket: datosvalo1,
-      PuntoVentaTicket: datosvalo2,
-      ClienteTicket: datosvalo3,
-    };
-
-    this.servi.CrearTicketU(cadena).then((res) => {
-        
+  async onSubmitModificarCliente(): Promise<any> {
+    if (!this.FormModificarCliente.invalid) {
+      const updateTicket = this.FormModificarCliente.value;
+      try {
+        console.log(updateTicket);
+        const res = await this.servi.ActualizarTicketU(updateTicket);
+        this.consultarTicketsTotales();
+        this.FormModificarCliente.reset;
+        this.ticketsFiltrados = [];
+        this.FormBusquedaCliente.get('TipoBusquedaCliente')?.setValue(
+          'id_tickets'
+        );
+        this.FormBusquedaCliente.get('ValorBusquedaCliente')?.setValue(
+          updateTicket.id_tickets
+        );
         console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    this.CrearTicketU.reset();
-  }
-
-
-  
-  public SelTicketEditar() {
-    this.BuscarEvalor = this.ActTicketU.getRawValue()['CBTicketEdi'];
-
-    this.servi.getTicketSeleccionado(this.BuscarEvalor).subscribe(
-      (data: any) => {
-        this.TicketCataEdi = data;
-        console.log(this.TicketCataEdi);
-
-        this.titloTicketEditar = 'TICKET A EDITAR';
-      },
-      (error) => {
+      } catch (error) {
         console.log(error);
       }
-    );
-  }
-
-
-//Por punto de venta
-  public SelTipPuntoVenta() {
-    this.BuscarEvalor = this.ConsultarTiketByPuntoVentaU.getRawValue()['CBTicketPuntoVenta'];
-    this.servi.getTicketTipPuntoVenta(this.BuscarEvalor).subscribe(
-      (data: any) => {
-        this.TicketUniTPunto = data;
-        console.log(this.TicketUniTPunto);
-
-        this.tituloTicketUniListaPuntoVenta = 'Punto de Venta a Consultar';
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-  }
-
-  public ActualizarTicket() {
-    //variables para armar el JSON que se va a enviar al Back-End
-    var datosvalo1 = this.ActTicketU.getRawValue()['CBTicketEdi'];
-
-    var datosvalo2 = this.ActTicketU.getRawValue()['textNueFechaTicketEdi'];
-
-    var datosvalo3 = this.ActTicketU.getRawValue()['textNuePuntoVentaEdi'];
-
-    var datosvalo4 = this.ActTicketU.getRawValue()['textNueClienteEdi'];
-
-   
-
-    var cadena = {
-      id_tickets: datosvalo1,
-
-      FechaTicket: datosvalo2,
-
-      PuntoVentaTicket: datosvalo3,
-
-      ClienteTicket: datosvalo4,
-    };
-
-
-    this.servi.ActualizarTicketU(cadena).then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
-    this.CrearTicketU.reset();
-  }
-
-  ngOnInit(): void {
-    this.listarTicketsTotales = this.formBuilder.group({});
-
-    this.ActTicketU = this.formBuilder.group({
-
-      CBTicketEdi: [],
-      //CBTipoCatalogoEdi: [],
-      textNueFechaTicketEdi: [],
-      textNuePuntoVentaEdi: [],
-      textNueClienteEdi: [],
-    });
-      
+    }
   }
 }

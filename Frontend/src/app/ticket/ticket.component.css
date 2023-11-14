@@ -1,26 +1,54 @@
-div.listaTicket,
-div.creaTicket,
-div.editTicket,
-div.listaTicketPuntoventa{
+div.dir,
+div.listaU,
+div.lista,
+div.colo,
+div.Tipveh,
+div.Marc,
+div.TipDocc,
+div.Epps,
+div.pref,
+div.crea,
+div.edit,
+div.buscar,
+div.creaU,
+div.editU {
   position: relative;
-  left: 0; /* Reiniciamos la posición a la izquierda */
-  border: 3px solid rgb(59, 61, 134); /* Cambiar el color de borde según la categoría */
-  width: 600px; /* Establecemos el mismo ancho para todos los contenedores */
-  background-color: rgb(238, 243, 191); /* Cambiar el color de fondo según la categoría */
+  left: 0;
+  /* Reiniciamos la posición a la izquierda */
+  border: 3px solid rgb(59, 61, 134);
+  /* Cambiar el color de borde según la categoría */
+  width: 70%;
+  /* Establecemos el mismo ancho para todos los contenedores */
+  background-color: rgb(238, 243, 191);
+  /* Cambiar el color de fondo según la categoría */
   text-align: center;
-  margin: 20px auto; /* Centramos horizontalmente y agregamos un espacio superior */
+  margin: 20px auto;
+  /* Centramos horizontalmente y agregamos un espacio superior */
 }
 
+/* Estilos específicos para cada categoría */
+div.dir {
+  /* Puedes agregar estilos específicos aquí */
+}
+
+div.listaU {
+  /* Puedes agregar estilos específicos aquí */
+}
 
 /* Repite para las demás categorías */
 
 /* Estilo para los enlaces */
 a {
-  color: rgb(59, 61, 134); /* Color de enlace relacionado a las apuestas */
+  color: rgb(59, 61, 134);
+  /* Color de enlace relacionado a las apuestas */
 }
 
 /* Estilos para listas y tablas */
-li, ul, th, td, table {
+li,
+ul,
+th,
+td,
+table {
   list-style: none;
   list-style-type: none;
   margin: 0;
@@ -30,12 +58,19 @@ li, ul, th, td, table {
 /* Estilo para las tablas */
 table {
   background-color: rgb(255, 237, 180);
-  width: 100%;
+  width: 90%;
+  margin-top: 10px;
+  margin-bottom: 30px;
+  margin-left: auto;
+  margin-right: auto;
   font-family: "calibri", Garamond, 'Comic Sans';
   font-weight: lighter;
-  font-size: 15px;
+  font-size: 12px;
   text-align: center;
   border-collapse: collapse;
+  border-style: solid;
+  border-color: black;
+  border-radius: 15px;
 }
 
 /* Estilos para las filas pares de las tablas */
@@ -69,6 +104,7 @@ tbody.Filb {
 }
 
 /* Estilos para las celdas de borde en las tablas */
-th.b, tr.b {
+th.b,
+tr.b {
   border: solid 1px black;
 }
