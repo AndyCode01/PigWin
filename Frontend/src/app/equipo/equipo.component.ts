@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MiservicioService } from '../miservicio.service';
 import { map } from 'rxjs/operators';
@@ -7,49 +7,98 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'app-equipo',
   templateUrl: './equipo.component.html',
-  styleUrls: ['./equipo.component.css']
+  styleUrls: ['./equipo.component.css'],
 })
 export class EquipoComponent implements OnInit {
-
   constructor(
     private formBuilder: FormBuilder,
     private servi: MiservicioService,
     Router: Router
   ) {}
 
+  public valoresByTipoCatalogo(id_tipo_catalogo: number) {
+    return this.servi
+      .getTipoCatalogo(id_tipo_catalogo)
+      .pipe(map((data) => data));
+  }
+
+  //Objeto donde se guarda la info del cliente
   Equipos: Array<any> = [];
-  EquiposFiltrados : Array<any> = [];
-  KeysEquipo: Array<any> = [];
+  keysEquipo: Array<any> = [];
+  equipoFiltrados: Array<any> = [];
 
   showTable: boolean = false;
-  filters: Array<string> = [];
-  valuefilters: Array<string> = [];
-
   showInputModificar: boolean = false;
 
+  isSubmitted = {
+    CrearApuesta: false,
+    BusquedaCliente: false,
+    ModificarCliente: false,
+  };
 
-  FormBusquedaEquipo = new FormGroup({
-    TipoBusquedaEquipo: new FormControl(),
-    ValorBusquedaEquipo: new FormControl(),
+  Catalogos: any = {
+    Deporte: [],
+  };
+
+  inputFormCliente: any = [
+    { label: 'Nombre del equipo', controlName: 'NombreEquipo' },
+  ];
+
+  selectFormCliente: any = [{ label: 'Deporte', controlName: 'Deporte' }];
+
+  selectFormBusquedaCliente: any = [
+    { label: 'Nombre', value: 'nombre' },
+    { label: 'id', value: 'id_equipos' },
+  ];
+
+  valoresBusqueda: any = [];
+
+  FormBusquedaCliente = this.formBuilder.group({
+    TipoBusquedaCliente: ['', Validators.required],
+    ValorBusquedaCliente: [1, Validators.required],
   });
 
-  FormCrearEquipo = new FormGroup({
-    'Nombre Equipo': new FormControl(),
-    'Deporte': new FormControl()
+  FormCrearCliente = this.formBuilder.group({
+    NombreEquipo: ['', Validators.required],
+    Deporte: [0, Validators.required],
   });
 
-  FormModificarEquipo = new FormGroup({
-    TipoBusquedaEquipo: new FormControl(),
-    ValorBusquedaEquipo: new FormControl(),
-    'Nombre Equipo': new FormControl(),
-    'Deporte': new FormControl()
+  setCrearClienteSelectValue() {
+    let CrearApuesta = {
+      Deporte: this.Catalogos?.Deporte[0].id_catalogo_universal,
+    };
+    this.FormCrearCliente.patchValue(CrearApuesta);
+  }
+
+  FormModificarCliente = this.formBuilder.group({
+    id_equipos: '',
+    NombreEquipo: ['', Validators.required],
+    Deporte: [0, Validators.required],
   });
 
-  public consultarEquiposTotales(){
+  setModificarClienteSelectValue() {
+    let deporte;
+    for (let index = 0; index < this.Catalogos?.Deporte.length; index++) {
+      if (
+        this.equipoFiltrados[0]['Deporte'] ==
+        this.Catalogos?.Deporte[index].NombreCatalogo
+      )
+        deporte = this.Catalogos?.Deporte[index].id_catalogo_universal;
+    }
+    console.log(this.equipoFiltrados[0]);
+
+    let ModificarCliente = {
+      id_equipos: this.equipoFiltrados[0].id_equipos,
+      NombreEquipo: this.equipoFiltrados[0].NombreEquipo,
+      Deporte: deporte,
+    };
+    this.FormModificarCliente.patchValue(ModificarCliente);
+  }
+
+  public consultaClientesTotales() {
     this.servi.getEquiposTotales().subscribe((data) => {
       this.Equipos = data;
-      this.KeysEquipo = Object.keys(this.Equipos[0]);
-      this.filtros(this.FormBusquedaEquipo);
+      this.keysEquipo = Object.keys(this.Equipos[0]);
     });
   }
 
@@ -62,96 +111,106 @@ export class EquipoComponent implements OnInit {
       this.showTable = false;
   }
 
-  public filtros(Form: FormGroup) {
-    
-    const tipoBusqueda = Form.getRawValue()['TipoBusquedaEquipo'];
-    this.valuefilters = this.listaValoresAtributo(tipoBusqueda);
-    console.log(tipoBusqueda, this.Equipos, this.valuefilters);
-  }
-
-
-  public listaValoresAtributo(tipoBusqueda: string) {
-    
-    let valores: Array<string> = [];
-    let flag: boolean = true;
-    for (let index = 0; index < this.Equipos.length; index++) {
-      valores.filter((valor) => {
-        if (valor == this.Equipos[index][tipoBusqueda]) flag = false;
-      });
-      if (flag == true) valores.push(this.Equipos[index][tipoBusqueda]);
-      flag = true;
-    }
-    return valores;
-  }
-
-  public async BuscarEquipo(Form: FormGroup) {
-    const valores = {
-      tipoBusqueda: Form.getRawValue()['TipoBusquedaEquipo'],
-      valorFiltro: Form.getRawValue()['ValorBusquedaEquipo'],
+  public async getCatalogos() {
+    this.Catalogos = {
+      Deporte: await this.valoresByTipoCatalogo(3).toPromise(),
     };
-
-    this.servi.getEquipoByID(valores?.valorFiltro).subscribe((data) => {
-      this.EquiposFiltrados = data;
-    });
   }
 
-  public valoresByTipoCatalogo(id_tipo_catalogo: number) {
-    return this.servi.getTipoCatalogo(id_tipo_catalogo).pipe(map((data) => data));
-  }
-
-  public async buscarValorCatalogo(atributo: string, valor: string) {
-    let id_tipo_catalogo: number = 0;
-    let catalogo: any;
-
-    switch (atributo) {
-      case 'Deporte':
-        catalogo = await this.valoresByTipoCatalogo(3).toPromise();
+  public getValoresBusqueda(tipoBusqueda: string) {
+    switch (tipoBusqueda) {
+      case 'nombre':
+        for (let index = 0; index < this.Equipos.length; index++) {
+          this.valoresBusqueda.push({
+            value: this.Equipos[index].id_equipos,
+            label: this.Equipos[index].NombreEquipo,
+          });
+        }
         break;
-
+      case 'id_equipos':
+        for (let index = 0; index < this.Equipos.length; index++) {
+          this.valoresBusqueda.push({
+            value: this.Equipos[index].id_equipos,
+            label: this.Equipos[index].id_equipos,
+          });
+        }
+        break;
     }
-
-    for (let index = 0; index < catalogo?.length; index++) {
-      if (valor == catalogo[index].NombreCatalogo) {
-        id_tipo_catalogo = catalogo[index].id_catalogo_universal;
-      }
-    }
-    return id_tipo_catalogo;
+    let valor = {
+      ValorBusquedaCliente: this.valoresBusqueda[0].value,
+    };
+    this.FormBusquedaCliente.patchValue(valor);
   }
 
-  public async registrarEquipo() {
-    let newEquipo: any = {};
-    const values = this.FormCrearEquipo.getRawValue();
-    for (const key in values) {
-      if (key == 'Deporte') {
-        newEquipo[key.replace(/ /g, '')] = await this.buscarValorCatalogo(
-          key,
-          values[key]
-        );
-      } else {
-        newEquipo[key.replace(/ /g, '')] = values[key];
+  async ngOnInit(): Promise<void> {
+    this.consultaClientesTotales();
+    await this.getCatalogos();
+    this.setCrearClienteSelectValue();
+    this.FormBusquedaCliente.get('TipoBusquedaCliente')?.valueChanges.subscribe(
+      (tipo) => {
+        this.valoresBusqueda = [];
+        this.getValoresBusqueda(tipo);
       }
-    }
+    );
+    let valor = {
+      TipoBusquedaCliente: 'nombre',
+    };
+    this.FormBusquedaCliente.patchValue(valor);
+  }
 
+  async onSubmitCrearCliente(): Promise<void> {
+    if (!this.FormCrearCliente.invalid) {
+      const newEquipo = this.FormCrearCliente.value;
+      try {
+        const res = await this.servi.CrearEquipo(newEquipo);
+        console.log(newEquipo);
+        this.FormCrearCliente.reset();
+        this.setCrearClienteSelectValue();
+        this.consultaClientesTotales();
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      this.isSubmitted.CrearApuesta = true;
+    }
+  }
+
+  async onSubmitBuscarCliente(): Promise<void> {
+    const valoresBusqueda = this.FormBusquedaCliente.value;
     try {
-      const res = await this.servi.CrearEquipo(newEquipo);
-      console.log(newEquipo);
-      this.FormCrearEquipo.reset();
-      this.consultarEquiposTotales();
-      console.log(res);
-    } catch (error) {
-      console.log(error);
+      switch (valoresBusqueda.TipoBusquedaCliente) {
+        default:
+          this.servi
+            .getEquipoByID(valoresBusqueda.ValorBusquedaCliente)
+            .subscribe((data) => {
+              this.equipoFiltrados = data;
+              this.setModificarClienteSelectValue();
+            });
+          break;
+      }
+    } catch (error) {}
+  }
+
+  async onSubmitModificarCliente(): Promise<any> {
+    if (!this.FormModificarCliente.invalid) {
+      const updateEquipo = this.FormModificarCliente.value;
+      try {
+        console.log(updateEquipo);
+        const res = await this.servi.ModificarEquipo(updateEquipo);
+        this.consultaClientesTotales();
+        this.FormModificarCliente.reset;
+        this.equipoFiltrados = [];
+        this.FormBusquedaCliente.get('TipoBusquedaCliente')?.setValue(
+          'id_equipos'
+        );
+        this.FormBusquedaCliente.get('ValorBusquedaCliente')?.setValue(
+          updateEquipo.id_equipos
+        );
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
     }
-
   }
-
-  ngOnInit(): void {
-    this.consultarEquiposTotales();
-    this.filtros(this.FormBusquedaEquipo);
-    this.FormCrearEquipo = this.formBuilder.group({
-      'Nombre Equipo': '',
-      'Deporte': '',
-    });
-
-  }
-
 }
