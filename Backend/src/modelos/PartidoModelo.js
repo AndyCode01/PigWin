@@ -4,16 +4,16 @@ var PartidoModelo = {};
 
 PartidoModelo.getPartidos = function (callback){
     if(connection){
-        var sql = "SELECT p.id_partidos, " +
-        "e1.NombreEquipo AS 'Equipo_Local', " +
-        "e2.NombreEquipo AS 'Equipo_Visitante', " +
-        "DATE_FORMAT(p.FechaPartido, ' %d/%m/%Y %H:%i ') AS 'FechaPartido', " +
-        "cu.NombreCatalogo, "+
-        "p.GanadorPartido " +
-        "FROM partidos AS p " +
-        "LEFT JOIN equipos AS e1 ON P.EquipoLocal = e1.id_equipos " +
-        "LEFT JOIN equipos AS e2 ON P.EquipoVisitante = e2.id_equipos " +
-        "LEFT JOIN catalogo_universal AS cu ON p.Deporte = cu.id_catalogo_universal;";
+        var sql =
+          "SELECT p.id_partidos, " +
+          "e1.NombreEquipo AS 'Equipo Local', " +
+          "e2.NombreEquipo AS 'Equipo Visitante', " +
+          "p.FechaPartido AS 'FechaPartido', " +
+          "cu.NombreCatalogo AS Deporte " +
+          "FROM partidos AS p " +
+          "LEFT JOIN equipos AS e1 ON P.EquipoLocal = e1.id_equipos " +
+          "LEFT JOIN equipos AS e2 ON P.EquipoVisitante = e2.id_equipos " +
+          "LEFT JOIN catalogo_universal AS cu ON p.Deporte = cu.id_catalogo_universal;";
 
         connection.query(sql, function (error, rows){
             if(error){
@@ -27,16 +27,18 @@ PartidoModelo.getPartidos = function (callback){
 
 PartidoModelo.getPartidoByTip = function (tip, callback){
     if(connection){
-        var sql = "SELECT p.id_partidos, " +
-        "e1.NombreEquipo AS 'Equipo Local', " +
-        "e2.NombreEquipo AS 'Equipo Visitante', " +
-        "DATE_FORMAT(p.FechaPartido, ' %d/%m/%Y %H:%i ') AS 'FechaPartido', " +
-        "cu.NombreCatalogo AS Deporte, " +
-        "p.GanadorPartido  AS 'Ganador Partido' " +
-        "FROM partidos AS p " +
-        "LEFT JOIN Equipos AS e1 ON p.EquipoLocal = e1.id_equipos " +
-        "LEFT JOIN Equipos AS e2 ON p.EquipoVisitante = e2.id_equipos " +
-        "LEFT JOIN catalogo_universal AS cu ON p.Deporte = cu.id_catalogo_universal WHERE p.Deporte = " + connection.escape(tip) + ";";
+        var sql =
+          "SELECT p.id_partidos, " +
+          "e1.NombreEquipo AS 'Equipo Local', " +
+          "e2.NombreEquipo AS 'Equipo Visitante', " +
+          "p.FechaPartido AS 'FechaPartido', " +
+          "cu.NombreCatalogo AS Deporte " +
+          "FROM partidos AS p " +
+          "LEFT JOIN Equipos AS e1 ON p.EquipoLocal = e1.id_equipos " +
+          "LEFT JOIN Equipos AS e2 ON p.EquipoVisitante = e2.id_equipos " +
+          "LEFT JOIN catalogo_universal AS cu ON p.Deporte = cu.id_catalogo_universal WHERE p.Deporte = " +
+          connection.escape(tip) +
+          ";";
 
         connection.query(sql, function (error, rows){
             if(error){
@@ -50,19 +52,18 @@ PartidoModelo.getPartidoByTip = function (tip, callback){
 
 PartidoModelo.getPartidoById = function (id, callback){
     if(connection){
-        var sql = "SELECT p.id_partidos, " +
-        "e1.NombreEquipo AS 'Equipo_Local', " +
-        "e2.NombreEquipo AS 'Equipo_Visitante', " +
-        "p.EquipoLocal, " +
-        "p.EquipoVisitante, " +
-        "DATE_FORMAT(p.FechaPartido, ' %d/%m/%Y %H:%i ') AS 'FechaPartido', " +
-        "p.Deporte, " +
-        "cu.NombreCatalogo AS 'DeporteNombre', " +
-        "p.GanadorPartido AS 'GanadorPartido' " +
-        "FROM partidos AS p "+
-        "LEFT JOIN Equipos AS e1 ON p.EquipoLocal = e1.id_equipos " +
-        "LEFT JOIN Equipos AS e2 ON p.EquipoVisitante = e2.id_equipos " +
-        "LEFT JOIN catalogo_universal AS cu ON p.Deporte = cu.id_catalogo_universal WHERE p.id_partidos = " + connection.escape(id) + ";";
+        var sql =
+          "SELECT p.id_partidos, " +
+          "e1.NombreEquipo AS 'Equipo Local', " +
+          "e2.NombreEquipo AS 'Equipo Visitante', " +
+          "p.FechaPartido AS 'FechaPartido', " +
+          "cu.NombreCatalogo AS 'Deporte' " +
+          "FROM partidos AS p " +
+          "LEFT JOIN Equipos AS e1 ON p.EquipoLocal = e1.id_equipos " +
+          "LEFT JOIN Equipos AS e2 ON p.EquipoVisitante = e2.id_equipos " +
+          "LEFT JOIN catalogo_universal AS cu ON p.Deporte = cu.id_catalogo_universal WHERE p.id_partidos = " +
+          connection.escape(id) +
+          ";";
 
         connection.query(sql, function (error, rows){
             if(error){

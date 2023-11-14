@@ -1,15 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-
-import {
-  FormGroup,
-  FormBuilder,
-  FormControl,
-  Validators,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-
 import { MiservicioService } from '../miservicio.service';
+import { map } from 'rxjs/operators';
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-partido',
@@ -23,304 +17,318 @@ export class PartidoComponent implements OnInit {
     Router: Router
   ) {}
 
-  title = 'Manejo de Partidos';
-  tituloPartidoLista = '';
-  tituloPartidoUniListaEquipo = '';
-  tituloPartidoUniListaDeporte = '';
-  titloPartidoBuscado = '';
-  titloPartidoEditar = '';
+  public valoresByTipoCatalogo(id_tipo_catalogo: number) {
+    return this.servi
+      .getTipoCatalogo(id_tipo_catalogo)
+      .pipe(map((data) => data));
+  }
 
-  //Crear
-  PartidoUniT: any = [];
-  //Editar
-  PartidoCataEdi: any = [];
-  //Consultar
-  DeporteCataRead: any = [];
+  public valoresByEquipo() {
+    return this.servi.getEquiposTotales().pipe(map((data) => data));
+  }
 
-  //Consulta general por equipo
-  equiposTotales: any = [];
-  deportesTotales: any = [];
+  //Objeto donde se guarda la info del cliente
+  Partidos: Array<any> = [];
+  keysPartido: Array<any> = [];
+  partidosFiltrados: Array<any> = [];
 
-  //Por tipo
-  PartidoUniTEquipo: any = [];
-  PartidoUniTDeporte: any = [];
+  showTable: boolean = false;
+  showInputModificar: boolean = false;
 
-  //Listar
-  tablapartidostotales: any = [];
-  //listar por tipo
-  tablapartidosDeporte: any = [];
+  isSubmitted = {
+    CrearCliente: false,
+    BusquedaCliente: false,
+    ModificarCliente: false,
+  };
 
-  BuscarEvalor = 1;
-  controlLista = 1;
+  Catalogos: any = {
+    EquiposFutbol: [],
+    EquiposBaloncesto: [],
+    EquiposValorant: [],
+    EquiposRegistrar: [],
+    EquiposModificar:[],
+    Deporte: [],
+  };
 
-  flag: boolean = false;
+  inputFormCliente: any = [
+    { label: 'Fecha del partido', controlName: 'FechaPartido' },
+  ];
 
-  // form group
-  listarPartidosTotales = new FormGroup({});
+  selectFormCliente: any = [
+    { label: 'Deporte', controlName: 'Deporte' },
+    { label: 'EquipoLocal', controlName: 'EquipoLocal' },
+    { label: 'EquipoVisitante', controlName: 'EquipoVisitante' },
+  ];
 
-  crearPartidoU = new FormGroup({
-    textNueEquipoLocal: new FormControl(),
-    textNueEquipoVisitante: new FormControl(),
-    textNueFechaPartido: new FormControl(),
-    textNueDeporte: new FormControl(),
-    textNueGanadorPartido: new FormControl(),
+  selectFormBusquedaCliente: any = [
+    { label: 'Deporte', value: 'deporte' },
+    { label: 'id', value: 'id_partidos' },
+  ];
+
+  valoresBusqueda: any = [];
+
+  FormBusquedaCliente = this.formBuilder.group({
+    TipoBusquedaCliente: ['', Validators.required],
+    ValorBusquedaCliente: [1, Validators.required],
   });
 
-  ActPartidoU = new FormGroup({
-    CBPartidoEdi: new FormControl(),
-    textNueEquipoLocalEdi: new FormControl(),
-    textNueEquipoVisitanteEdi: new FormControl(),
-    textNueFechaPartidoEdi: new FormControl(),
-    textNueDeporteEdi: new FormControl(),
-    textNueGanadorPartidoEdi: new FormControl(),
+  FormCrearCliente = this.formBuilder.group({
+    FechaPartido: ['', Validators.required],
+    Deporte: [0, Validators.required],
+    EquipoLocal: [0, Validators.required],
+    EquipoVisitante: [0, Validators.required],
+  });
 
-  })
+  setCrearClienteSelectValue() {
+    let CrearCliente = {
+      Deporte: this.Catalogos.Deporte[0].id_catalogo_universal,
+      EquipoLocal: this.Catalogos.EquiposFutbol[0].id_equipos,
+      EquipoVisitante: this.Catalogos.EquiposFutbol[1].id_equipos,
+    };
+    this.FormCrearCliente.patchValue(CrearCliente);
+  }
 
-  ConsultarPartidoBYIdU = new FormGroup({
-    CBPartidoRead: new FormControl(),
-    textEquipoLocalRead: new FormControl(),
-    textEquipoVisitanteRead: new FormControl(),
-    textFechaPartidoRead: new FormControl(),
-    textDeporteRead: new FormControl(),
-  })
+  FormModificarCliente = this.formBuilder.group({
+    id_partidos: '',
+    FechaPartido: ['', Validators.required],
+    Deporte: [0, Validators.required],
+    EquipoLocal: [0, Validators.required],
+    EquipoVisitante: [0, Validators.required],
+  });
 
+  setModificarClienteSelectValue() {
+    let equipoLocal;
+    let equipoVisitante;
+    let deporte;
 
-  // ConsultarPartidoByEquipoU = new FormGroup({
-  //   CBPartidoEquipo: new FormControl(),
-  // });
+    for (
+      let index = 0;
+      index < this.Catalogos?.EquiposModificar.length;
+      index++
+    ) {
+      if (
+        this.partidosFiltrados[0]['Equipo Local'] ==
+        this.Catalogos?.EquiposModificar[index].NombreEquipo
+      )
+        equipoLocal = this.Catalogos?.EquiposModificar[index].id_equipos;
+      else if (
+        this.partidosFiltrados[0]['Equipo Visitante'] ==
+        this.Catalogos?.EquiposModificar[index].NombreEquipo
+      )
+        equipoVisitante = this.Catalogos?.EquiposModificar[index].id_equipos;
+    }
+    for (
+      let index = 0;
+      index < this.Catalogos?.Deporte.length;
+      index++
+    ) {
+      if (
+        this.partidosFiltrados[0]['Deporte'] ==
+        this.Catalogos?.Deporte[index].NombreCatalogo
+      )
+        deporte = this.Catalogos?.Deporte[index].id_catalogo_universal;
+    }
+    const fechaTicket = new Date(this.partidosFiltrados[0].FechaPartido);
+    const utcFechaTicket = new Date(
+      fechaTicket.getTime() + fechaTicket.getTimezoneOffset() * 60 * 1000
+    );
+    const formattedFechaTicket = formatDate(
+      utcFechaTicket,
+      'yyyy-MM-ddTHH:mm',
+      'en-US'
+    );
 
+    let ModificarCliente = {
+      id_partidos: this.partidosFiltrados[0].id_partidos,
+      EquipoLocal: equipoLocal,
+      EquipoVisitante: equipoVisitante,
+      Deporte: deporte,
+      FechaPartido: formattedFechaTicket,
+    };
+    this.FormModificarCliente.patchValue(ModificarCliente);
+  }
 
-  ConsultarPartidoByDeporteU = new FormGroup({
-    CBPartidoDeporte: new FormControl(),
-  })
+  public consultaClientesTotales() {
+    this.servi.getPartidoTotal().subscribe((data) => {
+      this.Partidos = data;
+      this.keysPartido = Object.keys(this.Partidos[0]);
+    });
+  }
 
-  public consultaPartidosTotales(list: boolean) {
-    if (this.controlLista == 1) {
-      this.servi.getPartidoTotal().subscribe(
-        (data: { partidos: [] }) => {
-          if (list == true) this.flag = list;
-          this.PartidoUniT = data; //JSON.parse(data);
-          console.log(this.PartidoUniT);
-          this.tituloPartidoLista = 'Lista de Todos los partidos';
-          this.tablapartidostotales[0] = 'id partido';
-          this.tablapartidostotales[1] = 'Partido';
-          this.tablapartidostotales[2] = 'Fecha';
-          this.tablapartidostotales[3] = 'Deporte';
-          this.tablapartidostotales[4] = 'Ganador Partido';
-        },
-        (error) => {
-          console.error(error + ' ');
-        }
-      );
-    } else {
-      this.PartidoUniT = null;
-      this.tituloPartidoLista = '';
-      this.tablapartidostotales[0] = '';
-      this.tablapartidostotales[1] = '';
-      this.tablapartidostotales[2] = '';
-      this.tablapartidostotales[3] = '';
-      this.tablapartidostotales[4] = '';
-      this.controlLista = 1;
+  public mostrarTabla() {
+    this.showTable = true;
+  }
+
+  public limpiarLista() {
+    if (this.Partidos.length > 1 && this.showTable == true)
+      this.showTable = false;
+  }
+
+  public async getCatalogos() {
+    let equipos = await this.valoresByEquipo().toPromise();
+    equipos.filter((equipo: any) => {
+      switch (equipo.Deporte) {
+        case 'Futbol':
+          this.Catalogos.EquiposFutbol.push(equipo);
+          break;
+        case 'Baloncesto':
+          this.Catalogos.EquiposBaloncesto.push(equipo);
+          break;
+        case 'Valorant':
+          this.Catalogos.EquiposValorant.push(equipo);
+          break;
+      }
+    });
+    this.Catalogos.Deporte = await this.valoresByTipoCatalogo(3).toPromise();
+  }
+
+  public async getEquipos(id_catalogo_universal: number, tipo:string) {
+    const deporte = await this.servi
+      .getlCatEdit(id_catalogo_universal)
+      .toPromise();
+    switch (deporte[0].NombreCatalogo) {
+      case 'Futbol':
+        this.Catalogos[tipo] = this.Catalogos.EquiposFutbol;
+        break;
+      case 'Baloncesto':
+        this.Catalogos[tipo] = this.Catalogos.EquiposBaloncesto;
+        break;
+      case 'Valorant':
+        this.Catalogos[tipo] = this.Catalogos.EquiposValorant;
+        break;
     }
   }
 
-  public LimpiarLista(list: boolean) {
-    if (list == false) this.flag = list;
-    this.controlLista = 0;
-  }
-
-  // public consultaEquiposTotales() {
-  //   this.servi.getEquiposTotales().subscribe(
-  //     (data: { equipos: [] }) => {
-  //       this.equiposTotales = data;
-  //     },
-  //     (error) => {
-  //       console.error(error + ' ');
-  //     }
-  //   );
-  // }
-
-
-  // public consultaDeportesTotales() {
-  //   this.servi.getlListCatologoDeporte('/' + 3).subscribe(
-  //     (data: { equipos: [] }) => {
-  //       this.deportesTotales = data;
-  //     },
-  //     (error) => {
-  //       console.error(error + ' ');
-  //     }
-  //   );
-  // }
-
-  // public SelTipEquipo() {
-  //   this.BuscarEvalor = this.ConsultarPartidoByEquipoU.getRawValue()['CBPartidoEquipo'];
-  //   this.servi.getPartidoTipEquipo(this.BuscarEvalor).subscribe(
-  //     (data: any) => {
-  //       this.PartidoUniTEquipo = data;
-  //       console.log(this.PartidoUniTEquipo);
-
-  //       this.tituloPartidoUniListaEquipo = 'Equipo Local';
-  //     },
-  //     (error) => {
-  //       console.log(error);
-  //     }
-  //   );
-  // }
-
-  // public SelTipDeporte() {
-  //   this.BuscarEvalor = this.ConsultarPartidoByDeporte.getRawValue()['CBPartidoDeporte'];
-  //   this.servi.getPartidoTipEquipo(this.BuscarEvalor).subscribe(
-  //     (data: any) => {
-  //       this.PartidoUniTDeporte = data;
-  //       console.log(this.PartidoUniTDeporte);
-
-  //       this.tituloPartidoUniListaDeporte = 'Deporte';
-  //     },
-  //     (error) => {
-  //       console.log(error);
-  //     }
-  //   );
-  // }
-
-  //El metodo de la consulta que pues en este caso no sirve de mucho
-  public consultaDeportesTotales(){
-    this.servi.getDeportesTotales().subscribe(
-      (data:{equipos:[]})=>{
-        this.deportesTotales = data;
-      },(error)=>{
-        console.error(error + ' ');
-      }
-    )
-  }
-
-  //Intento de metodo para traerlo por deporte hice una consulta a equipos pero no
-  // pero la cague porque era a catalogo univrsal para obtener los deportes
-  public SelTipDeporte() {
-    this.BuscarEvalor = this.ConsultarPartidoByDeporteU.getRawValue()['CBPartidoDeporte'];
-    this.servi.getPartidoTipDeporte(this.BuscarEvalor).subscribe(
-      (data: any) => {
-        this.PartidoUniTDeporte = data;
-        console.log(this.PartidoUniTDeporte);
-
-        this.tituloPartidoUniListaDeporte = 'Deporte a Consultar';
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-  }
-
-
-
-
-  insertarNuevoPartido() {
-    var datosvalo1 = this.crearPartidoU.getRawValue()['textNueEquipoLocal'];
-    var datosvalo2 = this.crearPartidoU.getRawValue()['textNueEquipoVisitante'];
-    var datosvalo3 = this.crearPartidoU.getRawValue()['textNueFechaPartido']; 
-    var datosvalo4 = this.crearPartidoU.getRawValue()['textNueDeporte']; 
-   
-
-    var cadena = {
-      EquipoLocal: datosvalo1,
-      EquipoVisitante: datosvalo2,
-      FechaPartido: datosvalo3,
-      Deporte: datosvalo4,
-       
+  public getValoresBusqueda(tipoBusqueda: string) {
+    switch (tipoBusqueda) {
+      case 'deporte':
+        for (let index = 0; index < this.Catalogos.Deporte.length; index++) {
+          this.valoresBusqueda.push({
+            value: this.Catalogos.Deporte[index].id_catalogo_universal,
+            label: this.Catalogos.Deporte[index].NombreCatalogo,
+          });
+        }
+        break;
+      case 'id_partidos':
+        for (let index = 0; index < this.Partidos.length; index++) {
+          this.valoresBusqueda.push({
+            value: this.Partidos[index].id_partidos,
+            label: this.Partidos[index].id_partidos,
+          });
+        }
+        break;
+    }
+    let valor = {
+      ValorBusquedaCliente: this.valoresBusqueda[0].value,
     };
-
-    this.servi.crearPartidoU(cadena)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    this.crearPartidoU.reset();
+    this.FormBusquedaCliente.patchValue(valor);
   }
 
-  
-
-  public SelPartidoEditar() {
-    this.BuscarEvalor = this.ActPartidoU.getRawValue()['CBPartidoEdi'];
-
-    this.servi.getPartidoSeleccionado(this.BuscarEvalor).subscribe(
-      (data: any) => {
-        this.PartidoCataEdi = data;
-        console.log(this.PartidoCataEdi);
-
-        this.titloPartidoEditar = 'Partido a Editar';
-      },
-      (error) => {
-        console.log(error);
+  async ngOnInit(): Promise<void> {
+    this.consultaClientesTotales();
+    await this.getCatalogos();
+    this.setCrearClienteSelectValue();
+    this.FormCrearCliente.get('Deporte')?.valueChanges.subscribe(
+      async (tipo) => {
+        if(tipo){
+          await this.getEquipos(tipo, 'EquiposRegistrar');
+          let equipos = {
+            EquipoLocal: this.Catalogos.EquiposRegistrar[0]?.id_equipos,
+            EquipoVisitante: this.Catalogos.EquiposRegistrar[1]?.id_equipos,
+          };
+          this.FormCrearCliente.patchValue(equipos);
+        }
       }
     );
-  }
-
-  //Intento de metodo para consultar el partido por id
-  public SelPartidoConsultar() {
-    this.BuscarEvalor = this.ConsultarPartidoBYIdU.getRawValue()['CBPartidoRead'];
-
-    this.servi.getPartidoSeleccionado(this.BuscarEvalor).subscribe(
-      (data: any) => {
-        this.PartidoCataEdi = data;
-        console.log(this.PartidoCataEdi);
-
-        this.titloPartidoBuscado = 'Partido a Consultar';
-      },
-      (error) => {
-        console.log(error);
+    this.FormModificarCliente.get('Deporte')?.valueChanges.subscribe(
+      async (tipo) => {
+        if (tipo) {
+          await this.getEquipos(tipo, 'EquiposModificar');
+          let equipos = {
+            EquipoLocal: this.Catalogos.EquiposModificar[0]?.id_equipos,
+            EquipoVisitante: this.Catalogos.EquiposModificar[1]?.id_equipos,
+          };
+          this.FormModificarCliente.patchValue(equipos);
+        }
       }
     );
-  }
-
-
-
-  
-
-  public ActualizarPartido() {
-    //variables para armar el JSON que se va a enviar al Back-End
-    var datosvalo1 = this.ActPartidoU.getRawValue()['CBPartidoEdi'];
-    var datosvalo2 = this.ActPartidoU.getRawValue()['textNueEquipoLocalEdi'];
-    var datosvalo3 = this.ActPartidoU.getRawValue()['textNueEquipoVisitanteEdi'];
-    var datosvalo4 = this.ActPartidoU.getRawValue()['textNueFechaPartidoEdi'];
-    var datosvalo5 = this.ActPartidoU.getRawValue()['textNueDeporteEdi'];
-    
-    var cadena = {
-      id_partidos: datosvalo1,
-
-      EquipoLocal: datosvalo2,
-
-      EquipoVisitante: datosvalo3,
-
-      FechaPartido: datosvalo4,
-
-      Deporte: datosvalo5,
+    let aux = { Deporte: 19 };
+    this.FormCrearCliente.patchValue(aux);
+    this.FormBusquedaCliente.get('TipoBusquedaCliente')?.valueChanges.subscribe(
+      (tipo) => {
+        this.valoresBusqueda = [];
+        this.getValoresBusqueda(tipo);
+      }
+    );
+    let valor = {
+      TipoBusquedaCliente: 'deporte',
     };
-
-
-    this.servi.ActualizarPartidoU(cadena).then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
-    this.crearPartidoU.reset();
+    this.FormBusquedaCliente.patchValue(valor);
   }
 
+  async onSubmitCrearCliente(): Promise<void> {
+    if (!this.FormCrearCliente.invalid) {
+      const newCliente = this.FormCrearCliente.value;
+      try {
+        const res = await this.servi.crearPartidoU(newCliente);
+        console.log(newCliente);
+        this.FormCrearCliente.reset();
+        this.consultaClientesTotales();
+        this.setCrearClienteSelectValue();
+        // this.setModificarClienteSelectValue();
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      this.isSubmitted.CrearCliente = true;
+    }
+  }
 
+  async onSubmitBuscarCliente(): Promise<void> {
+    const valoresBusqueda = this.FormBusquedaCliente.value;
+    try {
+      switch (valoresBusqueda.TipoBusquedaCliente) {
+        case 'deporte':
+          this.servi
+            .getPartidoTipEquipo(valoresBusqueda.ValorBusquedaCliente)
+            .subscribe((data) => {
+              this.partidosFiltrados = data;
+              this.setModificarClienteSelectValue();
+            });
+          break;
 
-  ngOnInit(): void {
-    this.listarPartidosTotales = this.formBuilder.group({});
+        default:
+          this.servi
+            .getPartidoSeleccionado(valoresBusqueda.ValorBusquedaCliente)
+            .subscribe((data) => {
+              this.partidosFiltrados = data;
+              this.setModificarClienteSelectValue();
+            });
+          break;
+      }
+    } catch (error) {}
+  }
 
-    this.ActPartidoU = this.formBuilder.group({
-      CBPartidoEdi: [],
-      textNueEquipoLocalEdi: [],
-      textNueEquipoVisitanteEdi: [],
-      textNueFechaPartidoEdi: [],
-      textNueDeporteEdi: [],
-      textNueGanadorPartidoEdi: [],
-
-    });
+  async onSubmitModificarCliente(): Promise<any> {
+    if (!this.FormModificarCliente.invalid) {
+      const updateCliente = this.FormModificarCliente.value;
+      try {
+        console.log(updateCliente);
+        const res = await this.servi.ActualizarPartidoU(updateCliente);
+        this.consultaClientesTotales();
+        this.FormModificarCliente.reset;
+        this.partidosFiltrados = [];
+        this.FormBusquedaCliente.get('TipoBusquedaCliente')?.setValue(
+          'id_partidos'
+        );
+        this.FormBusquedaCliente.get('ValorBusquedaCliente')?.setValue(
+          updateCliente.id_partidos
+        );
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
+    }
   }
 }

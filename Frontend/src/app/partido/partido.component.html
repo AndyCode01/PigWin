@@ -1,249 +1,104 @@
 <body>
-
-    <div style="text-align:center">
-        <h1>{{ title }}</h1>
-        <img width="300" alt="Logo Proyecto" src="/assets/parque-tematico.png">
-    </div>
-
-    <br><br>
-
-    <div class="dir">
-
-    </div>
-    <br><br>
-
-    <!--------------------------------------------------------------------------------------------->
-    <!-- para mostrar los Catalogos Totales -->
-
-    <div class="listaPartido">
-
-        <h2>Todos los Partidos</h2>
-
-        <form (ngSubmit)="consultaPartidosTotales(true)" [formGroup]="listarPartidosTotales">
-
-            <button type="submit" style="margin-right: 30px">Listar todos </button>
-            <button (click)="LimpiarLista(false)" style="scroll-margin-left: 30px">Limpiar todos </button>
-
-            <br><br>
-            <div *ngIf="flag">
-                <h2>{{tituloPartidoLista}}</h2>
-                <table>
-                    <thead>
-                        <th>{{tablapartidostotales[0]}}</th>
-                        <th>{{tablapartidostotales[1]}}</th>
-                        <th>{{tablapartidostotales[2]}}</th>
-                        <th>{{tablapartidostotales[3]}}</th>
-                        <th>{{tablapartidostotales[4]}}</th>
-                    </thead>
-
-                    <tbody>
-                        <tr *ngFor='let tick of PartidoUniT'>
-
-                            <th>{{tick.id_partidos}} </th>
-                            <th>{{tick.Equipo_Local}} VS {{tick.Equipo_Visitante}} </th>
-                            <th>{{tick.FechaPartido}} </th>
-                            <th>{{tick.NombreCatalogo}} </th>
-                            <th>{{tick.GanadorPartido}} </th>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </form>
-    </div>
-    <br><br>
-<!-- Intento de traer por Id el partido, supuestamente el cucho esta pidiendolo eso le dijeron a rafael-->
-    <div class="ConsultarPartido">
-        <h2>Consultar un Partido por Id</h2>
-        <form (ngSubmit)="SelPartidoConsultar()" [formGroup]="ConsultarPartidoBYIdU">
-
-            <span class="spn_lbl">Partido a Consultar</span>
-            <label>
-                <select class="dropdown2" formControlName="DeporteCataRead" (click)="consultaPartidosTotales(false)">
-                    <option *ngFor="let caese of PartidoUniT" [value]="caese.id_partidos">
-                        {{caese.id_partidos}}
-                    </option>
-                </select>
-            </label>
-
-            <div *ngIf="flag">
-                <h2>{{tituloPartidoLista}}</h2>
-                <table>
-                    <thead>
-                        <th>{{tablapartidostotales[0]}}</th>
-                        <th>{{tablapartidostotales[1]}}</th>
-                        <th>{{tablapartidostotales[2]}}</th>
-                        <th>{{tablapartidostotales[3]}}</th>
-                        <th>{{tablapartidostotales[4]}}</th>
-                    </thead>
-
-                    <tbody>
-                        <tr *ngFor='let tick of PartidoUniT'>
-
-                            <th>{{tick.id_partidos}} </th>
-                            <th>{{tick.Equipo_Local}} VS {{tick.Equipo_Visitante}} </th>
-                            <th>{{tick.FechaPartido}} </th>
-                            <th>{{tick.NombreCatalogo}} </th>
-                            <th>{{tick.GanadorPartido}} </th>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <br><br>
-        </form>
-    </div>
-
-
-<!-- Intento de traer por deporte-->
-    <div class="listaPartidoByDeporte">
-    
-        <h2>Buscar por Deporte</h2>
-        <form (ngSubmit)="SelTipDeporte()" [formGroup]="ConsultarPartidoByDeporteU">
-
-            <span class="spn_lbl">Ticket a Editar</span>
-            <label>
-                <select class="dropdown2" formControlName="CBPartidoDeporte" (click)="consultaDeportesTotales()">
-                
-                    <option *ngFor="let caese of deportesTotales" [value]="caese.id_equipos">
-                        {{caese.NombreEquipo}}
-                    </option>
-                </select>
-            </label>
-            <br> <br>
-            <button type="submit">Buscar Deporte</button>
-          
-
-
-            <br /><br />
-
-            <h2>{{tituloPartidoUniListaDeporte}}</h2>
-
-            <table>
-                <thead>
-                    <th>{{tablapartidosDeporte[0]}}</th>
-                    <th>{{tablapartidosDeporte[1]}}</th>
-                    <th>{{tablapartidosDeporte[2]}}</th>
-                    <th>{{tablapartidosDeporte[3]}}</th>
-                </thead>
-
-                <tbody>
-                    <tr *ngFor="let pacudoc of PartidoUniTDeporte">
-                        <th>{{pacudoc.id_tickets}}</th>
-                        <th>{{pacudoc.FechaTicket}}</th>
-                        <th>{{pacudoc.PuntoVentaTicket}}</th>
-                        <th>{{pacudoc.PrimerNombre}} {{pacudoc.PrimerApellido}}</th>
-                    </tr>
-                </tbody>
-            </table>
-        </form>
-    </div>
-
-    <br /><br />
-    
-
-
-
-    <div class="creaPartido">
-
-        <h2>Registrar Partido</h2>
-
-        <form (ngSubmit)="insertarNuevoPartido()" [formGroup]="crearPartidoU">
-
-            <!-- Los otros controles para la captura de los datos del Catalogo -->
-
-            <span class="spn_lbl">Equipo local: </span>
-            <label for="textNueEquipoLocal">
-
-                <input type="text" name="TtextNueEquipoLocal" id="TtextNueEquipoLocal"
-                    formControlName="textNueEquipoLocal">
-
-            </label>
-            <br><br>
-
-            <span class="spn_lbl">Equipo Visitante: </span>
-            <label for="textNueEquipoVisitante">
-
-                <input type="text" name="TtextNueEquipoVisitante" id="TtextNueEquipoVisitante"
-                    formControlName="textNueEquipoVisitante">
-
-            </label>
-            <br><br>
-
-            <span class="spn_lbl">Fecha: </span>
-            <label for="textNueFechaPartido">
-
-                <input type="text" name="TtextNueFechaPartido" id="TtextNueFechaPartido"
-                    formControlName="textNueFechaPartido">
-
-            </label>
-            <br><br>
-
-            <span class="spn_lbl">Deporte: </span>
-            <label for="textNueDeporte">
-
-                <input type="text" name="TtextNueDeporte" id="TtextNueDeporte" formControlName="textNueDeporte">
-
-            </label>
-            <br><br>
-
-            <button type="submit">Registrar Partido</button>
-
-            <br><br>
-        </form>
-    </div>
-    <br><br>
-
-    <div class="editPartido">
-        <h2>Modificar un Partido</h2>
-        <form (ngSubmit)="SelPartidoEditar()" [formGroup]="ActPartidoU">
-
-            <span class="spn_lbl">Partido a Editar</span>
-            <label>
-                <select class="dropdown2" formControlName="CBPartidoEdi" (click)="consultaPartidosTotales(false)">
-                    <option *ngFor="let caese of PartidoUniT" [value]="caese.id_partidos">
-                        {{caese.id_partidos}}
-                    </option>
-                </select>
-            </label>
-            <br> <br>
-            <button type="submit">Buscar Partido a Editar</button>
-
-            <h2>{{titloPartidoEditar}}</h2>
-            <li *ngFor="let cae of PartidoCataEdi">
-
-                <!-- Los otros controles para la captura de los datos deL cATALOGO -->
-                <span class="spn_lbl">Equipo Local: </span>
-                <label for="CtextNueEquipoLocalEdi"><input type="text" name="CtextNueEquipoLocalEdi"
-                        id="CtextNueEquipoLocalEdi" value={{cae.EquipoLocal}} [(ngModel)]="cae.EquipoLocal"
-                        [value]="cae.EquipoLocal" formControlName="textNueEquipoLocalEdi">
-                </label>
-                <br><br>
-
-                <span class="spn_lbl">Equipo Visitante: </span>
-                <label for="CtextNueEquipoVisitanteEdi"><input type="text" name="CtextNueEquipoVisitanteEdi"
-                        id="CtextNueEquipoVisitanteEdi" value={{cae.EquipoVisitante}} [(ngModel)]="cae.EquipoVisitante"
-                        [value]="cae.EquipoVisitante" formControlName="textNueEquipoVisitanteEdi">
-                </label>
-                <br><br>
-
-                <span class="spn_lbl">Fecha: </span>
-                <label for="CtextNueFechaPartidoEdi"><input type="datetime-local" name="CtextNueFechaPartidoEdi"
-                        id="CtextNueFechaPartidoEdi" value={{cae.FechaPartido}} [(ngModel)]="cae.FechaPartido"
-                        [value]="cae.FechaPartido" formControlName="textNueFechaPartidoEdi">
-                </label>
-                <br><br>
-
-                <span class="spn_lbl">Deporte: </span>
-                <label for="CtextNueDeporteEdi"><input type="text" name="CtextNueDeporteEdi" id="CtextNueDeporteEdi"
-                        value={{cae.Deporte}} [(ngModel)]="cae.Deporte" [value]="cae.Deporte"
-                        formControlName="textNueDeporteEdi">
-                </label>
-                <br><br>
-            </li>
-            <br><br>
-
-            <button (click)="ActualizarPartido()">Actualizar Registro</button>
-
-            <br><br>
-        </form>
-    </div>
+  <div class="listaU">
+    <h1>Todos los partidos</h1>
+    <button (click)="mostrarTabla()">Mostrar Partidos</button>
+    <button (click)="limpiarLista()">Limpiar</button>
+      <table *ngIf="showTable">
+        <thead>
+          <th *ngFor="let key of keysPartido">{{key}}</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of Partidos ">
+            <th *ngFor="let key of keysPartido">{{cliente[key]}}</th>
+          </tr>
+        </tbody>
+      </table>
+  </div>
+  <br>
+  <div class="listaU">
+    <h1>Registro Partido</h1>
+    <form [formGroup]="FormCrearCliente" (ngSubmit)="onSubmitCrearCliente()">
+      <div style="display: flex; flex-wrap: wrap;">
+        <div style="margin: 10px;" *ngFor="let input of inputFormCliente">
+        <label for="{{input.controlName}}">{{input.label}}</label>
+        <input type="datetime-local" formControlName="{{input.controlName}}" [class.invalid]="FormCrearCliente.get(input.controlName)?.invalid && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)">
+        <span *ngIf="FormCrearCliente.get(input.controlName)?.hasError('required') && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)" >This field is required</span>
+        </div>
+        <div style="margin: 10px;">
+          <label for="Deporte">Deporte</label>
+          <select formControlName="Deporte">
+            <option *ngFor="let catalogo of Catalogos.Deporte" [ngValue]="catalogo?.id_catalogo_universal">{{catalogo?.NombreCatalogo}}</option>
+          </select>
+        </div>
+        <div style="margin: 10px;">
+          <label for="EquipoLocal">Equipo Local</label>
+          <select formControlName="EquipoLocal">
+            <option *ngFor="let catalogo of Catalogos.EquiposRegistrar" [ngValue]="catalogo?.id_equipos">{{catalogo?.NombreEquipo}}</option>
+          </select>
+        </div>
+        <div style="margin: 10px;">
+          <label for="EquipoVisitante">Equipo Visitante</label>
+          <select formControlName="EquipoVisitante">
+            <option *ngFor="let catalogo of Catalogos.EquiposRegistrar" [ngValue]="catalogo?.id_equipos">{{catalogo?.NombreEquipo}}</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="button">Crear Partido</button>
+    </form>
+  </div>
+  <br>
+  <div class="listaU">
+    <h1>Busqueda Partido</h1>
+    <form [formGroup]="FormBusquedaCliente" (ngSubmit)="onSubmitBuscarCliente()">
+      <select formControlName="TipoBusquedaCliente">
+        <option *ngFor="let tipoBusqueda of selectFormBusquedaCliente" [ngValue]="tipoBusqueda.value">{{tipoBusqueda.label}}</option>
+      </select>
+      <select formControlName="ValorBusquedaCliente">
+        <option *ngFor="let valor of valoresBusqueda" [ngValue]="valor.value">{{valor.label}}</option>
+      </select>
+      <button type="submit">Buscar Partido</button>
+    </form>
+    <table *ngIf="partidosFiltrados.length >=1">
+        <thead>
+          <th *ngFor="let key of keysPartido">{{key}}</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of partidosFiltrados ">
+            <th *ngFor="let key of keysPartido">{{cliente[key]}}</th>
+          </tr>
+        </tbody>
+    </table>
+      <br>
+    <h1>Modificar Partido</h1>
+    <h3 *ngIf="partidosFiltrados.length==0">Para modificar un cliente, antes debes buscarlo por id o nombre</h3>
+    <h3 *ngIf="partidosFiltrados.length>1">Solo puedes modificar un cliente, haz una busqueda mas especifica, sea por nombre o id</h3>
+    <form *ngIf="partidosFiltrados.length==1" [formGroup]="FormModificarCliente" (ngSubmit)="onSubmitModificarCliente()">
+      <div style="display: flex; flex-wrap: wrap;">
+        <div style="margin: 10px;" *ngFor="let input of inputFormCliente">
+        <label for="{{input.controlName}}">{{input.label}}</label>
+        <input type="datetime-local" formControlName="{{input.controlName}}" [class.invalid]="FormCrearCliente.get(input.controlName)?.invalid && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)">
+        <span *ngIf="FormCrearCliente.get(input.controlName)?.hasError('required') && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)" >This field is required</span>
+        </div>
+        <div style="margin: 10px;">
+          <label for="Deporte">Deporte</label>
+          <select formControlName="Deporte">
+            <option *ngFor="let catalogo of Catalogos.Deporte" [ngValue]="catalogo?.id_catalogo_universal">{{catalogo?.NombreCatalogo}}</option>
+          </select>
+        </div>
+        <div style="margin: 10px;">
+          <label for="EquipoLocal">Equipo Local</label>
+          <select formControlName="EquipoLocal">
+            <option *ngFor="let catalogo of Catalogos.EquiposModificar" [ngValue]="catalogo?.id_equipos">{{catalogo?.NombreEquipo}}</option>
+          </select>
+        </div>
+        <div style="margin: 10px;">
+          <label for="EquipoVisitante">Equipo Visitante</label>
+          <select formControlName="EquipoVisitante">
+            <option *ngFor="let catalogo of Catalogos.EquiposModificar" [ngValue]="catalogo?.id_equipos">{{catalogo?.NombreEquipo}}</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="button">Modificar Partido</button>
+    </form>
+  </div>
 </body>
