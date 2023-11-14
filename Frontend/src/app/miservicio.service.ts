@@ -80,14 +80,28 @@ export class MiservicioService {
   }
 
   async CrearTicketU(Dato: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.http.post(this.Url + '/Ticket', Dato, httpOptions).toPromise();
+    return new Promise(async(resolve, reject) => {
+      try {
+        const res = await this.http
+          .post(this.Url + '/Ticket', Dato, httpOptions)
+          .toPromise();
+        resolve(res);
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
   async ActualizarTicketU(Dato: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.http.put(this.Url + '/Ticket', Dato, httpOptions).toPromise();
+    return new Promise(async(resolve, reject) => {
+      try {
+        const res = await this.http
+          .put(this.Url + '/Ticket', Dato, httpOptions)
+          .toPromise();
+        resolve(res);
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
@@ -110,8 +124,15 @@ export class MiservicioService {
   // tabla de punto de venta
 
   async CrearPuntoVentaU(Dato: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.http.post(this.Url + '/PuntoVenta', Dato, httpOptions).toPromise();
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.http
+          .post(this.Url + '/PuntoVenta', Dato, httpOptions)
+          .toPromise();
+        resolve(res);
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
@@ -123,8 +144,15 @@ export class MiservicioService {
   }
 
   async ActualizarPuntoVentaU(Dato: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.http.put(this.Url + '/PuntoVenta', Dato, httpOptions).toPromise();
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.http
+          .put(this.Url + '/PuntoVenta', Dato, httpOptions)
+          .toPromise();
+        resolve(res);
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
@@ -139,13 +167,20 @@ export class MiservicioService {
   }
 
   async crearPartidoU(Dato: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.http.post(this.Url + '/Partido', Dato, httpOptions).toPromise();
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.http
+          .post(this.Url + '/Partido', Dato, httpOptions)
+          .toPromise();
+        resolve(res);
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
   getPartidoTipEquipo(id: any): Observable<any> {
-    return this.http.get(this.Url + '/Ticket/' + id, httpOptions);
+    return this.http.get(this.Url + '/Partido/' + id, httpOptions);
   }
 
   getPartidoSeleccionado(id_ticket: any): Observable<any> {
@@ -153,8 +188,15 @@ export class MiservicioService {
   }
 
   async ActualizarPartidoU(Dato: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.http.put(this.Url + '/Partido', Dato, httpOptions).toPromise();
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.http
+          .put(this.Url + '/Partido', Dato, httpOptions)
+          .toPromise();
+        resolve(res);
+      } catch (error) {
+        reject(error);
+      }
     });
   }
   //Para obtiener los deportes totales pero en realidad estoy obteniendo los equipos
@@ -216,6 +258,19 @@ export class MiservicioService {
       try {
         const res = await this.http
           .post(this.Url + '/Equipo', Dato, httpOptions)
+          .toPromise();
+        resolve(res);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  async ModificarEquipo(Dato: any): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.http
+          .put(this.Url + '/Equipo', Dato, httpOptions)
           .toPromise();
         resolve(res);
       } catch (error) {
