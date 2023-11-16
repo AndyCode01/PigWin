@@ -21,7 +21,7 @@ var Partido = require("./src/rutas/PartidoRuta");
 var Ticket = require("./src/rutas/TicketRuta");
 var EstadisticaEquipo = require("./src/rutas/EstadisticaEquipoRuta");
 var Equipo = require("./src/rutas/EquipoRuta");
-
+var Informe = require('./src/rutas/InformeRuta')
 
 
 //var tipdoc = require('./src/Rutas/tipdocruta');//ruta
@@ -88,6 +88,7 @@ app.use("/Partido", Partido);
 app.use("/Ticket", Ticket);
 app.use("/EstadisticaEquipo", EstadisticaEquipo);
 app.use("/Equipo", Equipo);
+app.use("/Informe", Informe);
 
 http.createServer(app).listen(app.get("port"), function () {
   console.log("Servidor Express escuchando por el puerto " + app.get("port"));
