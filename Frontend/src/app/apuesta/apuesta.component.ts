@@ -94,9 +94,9 @@ export class ApuestaComponent implements OnInit {
     for (let index = 0; index < this.Equipos.length; index++) {
       if (
         this.Equipos[index].NombreEquipo ==
-          this.Catalogos?.PartidoApuesta[0]?.Equipo_Local ||
+          this.Catalogos?.PartidoApuesta[0]['Equipo Local'] ||
         this.Equipos[index].NombreEquipo ==
-          this.Catalogos?.PartidoApuesta[0]?.Equipo_Visitante
+          this.Catalogos?.PartidoApuesta[0]['Equipo Visitante']
       ) {
         let objectEquipo = {
           id_equipos: this.Equipos[index].id_equipos,

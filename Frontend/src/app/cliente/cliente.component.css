@@ -1,25 +1,13 @@
-div.dir,
-div.listaU,
-div.lista,
-div.colo,
-div.Tipveh,
-div.Marc,
-div.TipDocc,
-div.Epps,
-div.pref,
-div.crea,
-div.edit,
-div.buscar,
-div.creaU,
-div.editU {
+div.listaEquipo,
+div.listaU {
   position: relative;
   left: 0;
   /* Reiniciamos la posición a la izquierda */
-  border: 3px solid rgb(59, 61, 134);
+
   /* Cambiar el color de borde según la categoría */
   width: 70%;
   /* Establecemos el mismo ancho para todos los contenedores */
-  background-color: rgb(238, 243, 191);
+
   /* Cambiar el color de fondo según la categoría */
   text-align: center;
   margin: 20px auto;
@@ -57,10 +45,10 @@ table {
 
 /* Estilo para las tablas */
 table {
-  background-color: rgb(255, 237, 180);
-  width: 90%;
-  margin-top: 10px;
-  margin-bottom: 30px;
+  background-color: rgb(196, 195, 193);
+  width: 95%;
+  margin-top: 15px;
+  margin-bottom: 15px;
   margin-left: auto;
   margin-right: auto;
   font-family: "calibri", Garamond, 'Comic Sans';
@@ -75,7 +63,7 @@ table {
 
 /* Estilos para las filas pares de las tablas */
 tr:nth-child(even) {
-  background-color: rgb(250, 222, 128);
+  background-color: rgb(235, 235, 231);
 }
 
 /* Estilos para las tablas específicas */
@@ -107,4 +95,12 @@ tbody.Filb {
 th.b,
 tr.b {
   border: solid 1px black;
+}
+
+.invalid {
+  border: 1px solid red;
+}
+
+.error {
+  color: red;
 }

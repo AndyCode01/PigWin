@@ -1,80 +1,103 @@
 <body>
   <div class="listaU">
-    <h1>Todos los equipos</h1>
-    <button (click)="mostrarTabla()">Mostrar Equipos</button>
-    <button (click)="limpiarLista()">Limpiar</button>
-      <table *ngIf="showTable">
-        <thead>
-          <th *ngFor="let key of keysEquipo">{{key}}</th>
-        </thead>
-        <tbody>
-          <tr *ngFor="let cliente of Equipos ">
-            <th *ngFor="let key of keysEquipo">{{cliente[key]}}</th>
-          </tr>
-        </tbody>
-      </table>
+    <div class="card text-center text-bg-dark mb-3">
+      <div class="card-header">
+        <h1>Todos los equipos</h1>
+      </div>
+      <div class="card-body">
+        <button (click)="mostrarTabla()" class="btn btn-light" style="margin-right: 3vh;">Mostrar Equipos</button>
+        <button (click)="limpiarLista()" class="btn btn-light" style="margin-left: 3vh;">Limpiar</button>
+        <table *ngIf="showTable" class="table-light">
+          <thead>
+            <th *ngFor="let key of keysEquipo">{{key}}</th>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cliente of Equipos ">
+              <th *ngFor="let key of keysEquipo">{{cliente[key]}}</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
   <br>
   <div class="listaU">
-    <h1>Registro Equipo</h1>
-    <form [formGroup]="FormCrearCliente" (ngSubmit)="onSubmitCrearCliente()">
-      <div style="display: flex; flex-wrap: wrap;">
-        <div style="margin: 10px;" *ngFor="let input of inputFormCliente">
-        <label for="{{input.controlName}}">{{input.label}}</label>
-        <input type="text" formControlName="{{input.controlName}}" [class.invalid]="FormCrearCliente.get(input.controlName)?.invalid && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearApuesta)">
-        <span *ngIf="FormCrearCliente.get(input.controlName)?.hasError('required') && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearApuesta)" >This field is required</span>
-        </div>
-        <div style="margin: 10px;" *ngFor="let select of selectFormCliente">
-          <label for="{{select.controlName}}">{{select.label}}</label>
-          <select formControlName="{{select.controlName}}">
-            <option *ngFor="let catalogo of Catalogos[select.controlName]" [ngValue]="catalogo?.id_catalogo_universal">{{catalogo?.NombreCatalogo}}</option>
-          </select>
-        </div>
+    <div class="card text-center text-bg-dark mb-3">
+      <div class="card-header">
+        <h1>Busqueda Equipo</h1>
       </div>
-      <button type="submit" class="button">Crear Equipo</button>
-    </form>
+      <div class="card-body">
+        <form [formGroup]="FormBusquedaCliente" (ngSubmit)="onSubmitBuscarCliente()">
+          <select formControlName="TipoBusquedaCliente">
+            <option *ngFor="let tipoBusqueda of selectFormBusquedaCliente" [ngValue]="tipoBusqueda.value">{{tipoBusqueda.label}}</option>
+          </select>
+          <select formControlName="ValorBusquedaCliente">
+            <option *ngFor="let valor of valoresBusqueda" [ngValue]="valor.value">{{valor.label}}</option>
+          </select>
+          <button type="submit" class="btn btn-light" style="margin-left: 3vh;">Buscar Equipo</button>
+        </form>
+        <table *ngIf="equipoFiltrados.length >=1" class="table-light">
+            <thead>
+              <th *ngFor="let key of keysEquipo">{{key}}</th>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cliente of equipoFiltrados ">
+                <th *ngFor="let key of keysEquipo">{{cliente[key]}}</th>
+              </tr>
+            </tbody>
+        </table>
+      </div>
+    </div>
   </div>
   <br>
-  <div class="listaU">
-    <h1>Busqueda Equipo</h1>
-    <form [formGroup]="FormBusquedaCliente" (ngSubmit)="onSubmitBuscarCliente()">
-      <select formControlName="TipoBusquedaCliente">
-        <option *ngFor="let tipoBusqueda of selectFormBusquedaCliente" [ngValue]="tipoBusqueda.value">{{tipoBusqueda.label}}</option>
-      </select>
-      <select formControlName="ValorBusquedaCliente">
-        <option *ngFor="let valor of valoresBusqueda" [ngValue]="valor.value">{{valor.label}}</option>
-      </select>
-      <button type="submit">Buscar Equipo</button>
-    </form>
-    <table *ngIf="equipoFiltrados.length >=1">
-        <thead>
-          <th *ngFor="let key of keysEquipo">{{key}}</th>
-        </thead>
-        <tbody>
-          <tr *ngFor="let cliente of equipoFiltrados ">
-            <th *ngFor="let key of keysEquipo">{{cliente[key]}}</th>
-          </tr>
-        </tbody>
-    </table>
-      <br>
-    <h1>Modificar Equipo</h1>
-    <h3 *ngIf="equipoFiltrados.length==0">Para modificar un equipo, antes debes buscarlo por id o nombre</h3>
-    <h3 *ngIf="equipoFiltrados.length>1">Solo puedes modificar un equipo, haz una busqueda mas especifica, sea por nombre o id</h3>
-    <form *ngIf="equipoFiltrados.length==1" [formGroup]="FormModificarCliente" (ngSubmit)="onSubmitModificarCliente()">
-      <div style="display: flex; flex-wrap: wrap;">
-        <div style="margin: 10px;" *ngFor="let input of inputFormCliente">
-        <label for="{{input.controlName}}">{{input.label}}</label>
-        <input type="text" formControlName="{{input.controlName}}" [class.invalid]="FormCrearCliente.get(input.controlName)?.invalid && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearApuesta)">
-        <span *ngIf="FormCrearCliente.get(input.controlName)?.hasError('required') && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearApuesta)">This field is required</span>
-        </div>
-        <div style="margin: 10px;" *ngFor="let select of selectFormCliente">
-          <label for="{{select.controlName}}">{{select.label}}</label>
-          <select formControlName="{{select.controlName}}">
-            <option *ngFor="let catalogo of Catalogos[select.controlName]" [ngValue]="catalogo?.id_catalogo_universal">{{catalogo?.NombreCatalogo}}</option>
-          </select>
-        </div>
+  <div class="listaU" style="display: flex; flex-wrap: wrap; justify-content: center;">
+    <div class="card text-center text-bg-dark mb-3" style="width: 45%;margin-right: 6vh;">
+      <div class="card-header">
+        <h1>Registro Equipo</h1>
       </div>
-      <button type="submit" class="button">Modificar Equipo</button>
-    </form>
+      <div class="card-body">
+        <form [formGroup]="FormCrearCliente" (ngSubmit)="onSubmitCrearCliente()" >
+          <div style="display: flex; flex-wrap: wrap;">
+            <div style="margin: 10px;" *ngFor="let input of inputFormCliente">
+            <label for="{{input.controlName}}">{{input.label}}</label>
+            <input type="text" formControlName="{{input.controlName}}" [class.invalid]="FormCrearCliente.get(input.controlName)?.invalid && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearApuesta)">
+            <span *ngIf="FormCrearCliente.get(input.controlName)?.hasError('required') && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearApuesta)" >This field is required</span>
+            </div>
+            <div style="margin: 10px;" *ngFor="let select of selectFormCliente">
+              <label for="{{select.controlName}}">{{select.label}}</label>
+              <select formControlName="{{select.controlName}}">
+                <option *ngFor="let catalogo of Catalogos[select.controlName]" [ngValue]="catalogo?.id_catalogo_universal">{{catalogo?.NombreCatalogo}}</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-light">Crear Equipo</button>
+        </form>
+      </div>
+    </div>
+    <div class="card text-center text-bg-dark mb-3" style="width: 45%;margin-left: 6vh;">
+      <div class="card-header">
+        <h1>Modificar Equipo</h1>
+      </div>
+      <div class="card-body">
+        <h5 *ngIf="equipoFiltrados.length==0">Para modificar un equipo, antes debes buscarlo por id o nombre</h5>
+        <h5 *ngIf="equipoFiltrados.length>1">Solo puedes modificar un equipo, haz una busqueda mas especifica, sea por nombre o id</h5>
+        <form *ngIf="equipoFiltrados.length==1" [formGroup]="FormModificarCliente" (ngSubmit)="onSubmitModificarCliente()">
+          <div style="display: flex; flex-wrap: wrap;">
+            <div style="margin: 10px;" *ngFor="let input of inputFormCliente">
+            <label for="{{input.controlName}}">{{input.label}}</label>
+            <input type="text" formControlName="{{input.controlName}}" [class.invalid]="FormCrearCliente.get(input.controlName)?.invalid && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearApuesta)">
+            <span *ngIf="FormCrearCliente.get(input.controlName)?.hasError('required') && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearApuesta)">This field is required</span>
+            </div>
+            <div style="margin: 10px;" *ngFor="let select of selectFormCliente">
+              <label for="{{select.controlName}}">{{select.label}}</label>
+              <select formControlName="{{select.controlName}}">
+                <option *ngFor="let catalogo of Catalogos[select.controlName]" [ngValue]="catalogo?.id_catalogo_universal">{{catalogo?.NombreCatalogo}}</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-light">Modificar Equipo</button>
+        </form>
+      </div>
+    </div>
   </div>
 </body>

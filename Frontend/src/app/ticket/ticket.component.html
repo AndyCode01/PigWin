@@ -1,92 +1,115 @@
 <body>
   <div class="listaU">
-    <h1>Todos los Tickets</h1>
-    <button (click)="mostrarTabla()">Mostrar Tickets</button>
-    <button (click)="limpiarLista()">Limpiar</button>
-      <table *ngIf="showTable">
-        <thead>
-          <th *ngFor="let key of keysTickets">{{key}}</th>
-        </thead>
-        <tbody>
-          <tr *ngFor="let cliente of Tickets ">
-            <th *ngFor="let key of keysTickets">{{cliente[key]}}</th>
-          </tr>
-        </tbody>
-      </table>
+    <div class="card text-center text-bg-dark mb-3">
+      <div class="card-header">
+        <h1>Todos los Tickets</h1>
+      </div>
+      <div class="card-body">
+        <button (click)="mostrarTabla()" class="btn btn-light" style="margin-right: 3vh;">Mostrar Tickets</button>
+        <button (click)="limpiarLista()" class="btn btn-light" style="margin-right: 3vh;">Limpiar</button>
+          <table *ngIf="showTable" class="table-light">
+            <thead>
+              <th *ngFor="let key of keysTickets">{{key}}</th>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cliente of Tickets ">
+                <th *ngFor="let key of keysTickets">{{cliente[key]}}</th>
+              </tr>
+            </tbody>
+          </table>
+      </div>
+    </div>
   </div>
   <br>
   <div class="listaU">
-    <h1>Registro Ticket</h1>
-    <form [formGroup]="FormCrearCliente" (ngSubmit)="onSubmitCrearTicket()">
-      <div style="display: flex; flex-wrap: wrap;">
-        <div style="margin: 10px;" *ngFor="let input of inputFormCliente">
-        <label for="{{input.controlName}}">{{input.label}}</label>
-        <input type="datetime-local" formControlName="{{input.controlName}}" [class.invalid]="FormCrearCliente.get(input.controlName)?.invalid && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)">
-        <span *ngIf="FormCrearCliente.get(input.controlName)?.hasError('required') && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)" >This field is required</span>
-        </div>
-        <div style="margin: 10px;">
-          <label for="NombrePuntoVenta">Punto de venta</label>
-          <select formControlName="NombrePuntoVenta">
-            <option *ngFor="let tickets of Catalogos.PuntoVenta" [ngValue]="tickets.id_punto_venta">{{tickets.NombrePuntoVenta}}</option>
-          </select>
-        <div style="margin: 10px;">
-          <label for="cliente">Ticket</label>
-          <select formControlName="cliente">
-            <option *ngFor="let tickets of Catalogos.cliente" [ngValue]="tickets.id_clientes">{{tickets['Primer Nombre']}} {{tickets['Segundo Nombre']}} {{tickets['Primer Apellido']}}</option>
-          </select>
-        </div>
-        </div>
+    <div class="card text-center text-bg-dark mb-3">
+      <div class="card-header">
+        <h1>Busqueda Ticket</h1>
       </div>
-      <button type="submit" class="button">Crear Ticket</button>
-    </form>
+      <div class="card-body">
+        <form [formGroup]="FormBusquedaCliente" (ngSubmit)="onSubmitBuscarCliente()">
+          <select formControlName="TipoBusquedaCliente" style="margin-left: 2vh;">
+            <option *ngFor="let tipoBusqueda of selectFormBusquedaCliente" [ngValue]="tipoBusqueda.value">{{tipoBusqueda.label}}</option>
+          </select>
+          <select formControlName="ValorBusquedaCliente" style="margin-left: 2vh;">
+            <option *ngFor="let valor of valoresBusqueda" [ngValue]="valor.value">{{valor.label}}</option>
+          </select>
+          <button type="submit" class="btn btn-light" style="margin-left: 2vh;">Buscar Ticket</button>
+        </form>
+        <table *ngIf="ticketsFiltrados.length >=1" class="table-light">
+            <thead>
+              <th *ngFor="let key of keysTickets">{{key}}</th>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cliente of ticketsFiltrados ">
+                <th *ngFor="let key of keysTickets">{{cliente[key]}}</th>
+              </tr>
+            </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-  <br>
-  <div class="listaU">
-    <h1>Busqueda Ticket</h1>
-    <form [formGroup]="FormBusquedaCliente" (ngSubmit)="onSubmitBuscarCliente()">
-      <select formControlName="TipoBusquedaCliente">
-        <option *ngFor="let tipoBusqueda of selectFormBusquedaCliente" [ngValue]="tipoBusqueda.value">{{tipoBusqueda.label}}</option>
-      </select>
-      <select formControlName="ValorBusquedaCliente">
-        <option *ngFor="let valor of valoresBusqueda" [ngValue]="valor.value">{{valor.label}}</option>
-      </select>
-      <button type="submit">Buscar Ticket</button>
-    </form>
-    <table *ngIf="ticketsFiltrados.length >=1">
-        <thead>
-          <th *ngFor="let key of keysTickets">{{key}}</th>
-        </thead>
-        <tbody>
-          <tr *ngFor="let cliente of ticketsFiltrados ">
-            <th *ngFor="let key of keysTickets">{{cliente[key]}}</th>
-          </tr>
-        </tbody>
-    </table>
-      <br>
-    <h1>Modificar Ticket</h1>
-    <h3 *ngIf="ticketsFiltrados.length==0">Para modificar un cliente, antes debes buscarlo por id o nombre</h3>
-    <h3 *ngIf="ticketsFiltrados.length>1">Solo puedes modificar un cliente, haz una busqueda mas especifica, sea por nombre o id</h3>
-    <form *ngIf="ticketsFiltrados.length==1" [formGroup]="FormModificarCliente" (ngSubmit)="onSubmitModificarCliente()">
-      <div style="display: flex; flex-wrap: wrap;">
-        <div style="margin: 10px;" *ngFor="let input of inputFormCliente">
-        <label for="{{input.controlName}}">{{input.label}}</label>
-        <input type="datetime-local" formControlName="{{input.controlName}}" [class.invalid]="FormCrearCliente.get(input.controlName)?.invalid && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)">
-        <span *ngIf="FormCrearCliente.get(input.controlName)?.hasError('required') && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)">This field is required</span>
-        </div>
-        <div style="margin: 10px;">
-          <label for="NombrePuntoVenta">Punto de venta</label>
-          <select formControlName="NombrePuntoVenta">
-            <option *ngFor="let catalogo of Catalogos.PuntoVenta" [ngValue]="catalogo?.id_punto_venta">{{catalogo?.NombrePuntoVenta}}</option>
-          </select>
-        </div>
-        <div style="margin: 10px;">
-          <label for="cliente">Cliente</label>
-          <select formControlName="cliente">
-            <option *ngFor="let catalogo of Catalogos.cliente" [ngValue]="catalogo?.id_clientes">{{catalogo['Primer Nombre']}} {{catalogo['Segundo Nombre']}} {{catalogo['Primer Apellido']}}</option>
-          </select>
-        </div>
+  <div class="listaU" style="display: flex; flex-wrap: wrap; justify-content: center;">
+    <div class="card text-center text-bg-dark mb-3" style="width: 45%;margin-right: 6vh;">
+      <div class="card-header">
+        <h1>Registro Ticket</h1>
       </div>
-      <button type="submit" class="button">Modificar Ticket</button>
-    </form>
+      <div class="card-body">
+        <form [formGroup]="FormCrearCliente" (ngSubmit)="onSubmitCrearTicket()">
+          <div style="display: flex; flex-wrap: wrap;">
+            <div style="margin: 10px;" *ngFor="let input of inputFormCliente">
+            <label for="{{input.controlName}}">{{input.label}}</label>
+            <input type="datetime-local" formControlName="{{input.controlName}}" [class.invalid]="FormCrearCliente.get(input.controlName)?.invalid && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)">
+            <span *ngIf="FormCrearCliente.get(input.controlName)?.hasError('required') && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)" >This field is required</span>
+            </div>
+            <div style="margin: 10px;">
+              <label for="NombrePuntoVenta">Punto de venta</label>
+              <select formControlName="NombrePuntoVenta">
+                <option *ngFor="let tickets of Catalogos.PuntoVenta" [ngValue]="tickets.id_punto_venta">{{tickets.NombrePuntoVenta}}</option>
+              </select>
+            <div style="margin: 10px;">
+              <label for="cliente">Ticket</label>
+              <select formControlName="cliente">
+                <option *ngFor="let tickets of Catalogos.cliente" [ngValue]="tickets.id_clientes">{{tickets['Primer Nombre']}} {{tickets['Segundo Nombre']}} {{tickets['Primer Apellido']}}</option>
+              </select>
+            </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-light">Crear Ticket</button>
+        </form>
+      </div>
+    </div>
+    <div class="card text-center text-bg-dark mb-3" style="width: 45%;margin-right: 6vh;">
+      <div class="card-header">
+        <h1>Modificar Ticket</h1>
+      </div>
+      <div class="card-body">
+        <h3 *ngIf="ticketsFiltrados.length==0">Para modificar un cliente, antes debes buscarlo por id o nombre</h3>
+        <h3 *ngIf="ticketsFiltrados.length>1">Solo puedes modificar un cliente, haz una busqueda mas especifica, sea por nombre o id</h3>
+        <form *ngIf="ticketsFiltrados.length==1" [formGroup]="FormModificarCliente" (ngSubmit)="onSubmitModificarCliente()">
+          <div style="display: flex; flex-wrap: wrap;">
+            <div style="margin: 10px;" *ngFor="let input of inputFormCliente">
+            <label for="{{input.controlName}}">{{input.label}}</label>
+            <input type="datetime-local" formControlName="{{input.controlName}}" [class.invalid]="FormCrearCliente.get(input.controlName)?.invalid && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)">
+            <span *ngIf="FormCrearCliente.get(input.controlName)?.hasError('required') && (FormCrearCliente.get(input.controlName)?.dirty || FormCrearCliente.get(input.controlName)?.touched || isSubmitted.CrearCliente)">This field is required</span>
+            </div>
+            <div style="margin: 10px;">
+              <label for="NombrePuntoVenta">Punto de venta</label>
+              <select formControlName="NombrePuntoVenta">
+                <option *ngFor="let catalogo of Catalogos.PuntoVenta" [ngValue]="catalogo?.id_punto_venta">{{catalogo?.NombrePuntoVenta}}</option>
+              </select>
+            </div>
+            <div style="margin: 10px;">
+              <label for="cliente">Cliente</label>
+              <select formControlName="cliente">
+                <option *ngFor="let catalogo of Catalogos.cliente" [ngValue]="catalogo?.id_clientes">{{catalogo['Primer Nombre']}} {{catalogo['Segundo Nombre']}} {{catalogo['Primer Apellido']}}</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-light">Modificar Ticket</button>
+        </form>
+      </div>
+    </div>
+
   </div>
 </body>

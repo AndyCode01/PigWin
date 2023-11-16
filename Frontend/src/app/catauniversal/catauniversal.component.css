@@ -14,9 +14,7 @@ div.creaU,
 div.editU {
   position: relative;
   left: 0; /* Reiniciamos la posición a la izquierda */
-  border: 3px solid rgb(59, 61, 134); /* Cambiar el color de borde según la categoría */
-  width: 600px; /* Establecemos el mismo ancho para todos los contenedores */
-  background-color: rgb(238, 243, 191); /* Cambiar el color de fondo según la categoría */
+  width: 70%; /* Establecemos el mismo ancho para todos los contenedores */
   text-align: center;
   margin: 20px auto; /* Centramos horizontalmente y agregamos un espacio superior */
 }
@@ -47,7 +45,7 @@ li, ul, th, td, table {
 
 /* Estilo para las tablas */
 table {
-  background-color: rgb(255, 237, 180);
+  background-color: rgb(196, 195, 193);
   width: 100%;
   font-family: "calibri", Garamond, 'Comic Sans';
   font-weight: lighter;
@@ -58,7 +56,7 @@ table {
 
 /* Estilos para las filas pares de las tablas */
 tr:nth-child(even) {
-  background-color: rgb(250, 222, 128);
+  background-color: rgb(235, 235, 231);
 }
 
 /* Estilos para las tablas específicas */

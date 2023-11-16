@@ -7,7 +7,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
 import { MiservicioService } from './miservicio.service';
 import { AppComponent } from './appcomponent/app.component';
 import { CatauniversalComponent } from './catauniversal/catauniversal.component';
@@ -19,6 +18,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { EquipoComponent } from './equipo/equipo.component';
 import { ApuestaComponent } from './apuesta/apuesta.component';
 import { PruebaComponent } from './prueba/prueba.component';
+import { LandingPageComponent } from './landing-page/landing-page.component';
+import { InformesComponent } from './informes/informes.component';
 
 
 
@@ -31,6 +32,10 @@ const appRoutes: Routes = [
   },
   {
     path: 'Inicio',
+    component: LandingPageComponent,
+  },
+  {
+    path: 'Catalogo',
     component: CatauniversalComponent,
   },
   {
@@ -74,6 +79,8 @@ const appRoutes: Routes = [
     EquipoComponent,
     ApuestaComponent,
     PruebaComponent,
+    LandingPageComponent,
+    InformesComponent,
   ],
   imports: [
     BrowserModule,
